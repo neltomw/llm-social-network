@@ -207,7 +207,6 @@ def make_plot(network_metrics_df, save_name=None, plot_type='default', plot_homo
     plt.grid(alpha=0.2)
 
     if (len(network_metrics_df['save_name'].unique()) > 5) or (legend_pos is not None):
-        print('setting legend pos')
         if legend_pos is None:
             legend_pos = (1,1)
         # move legend outside the plot if there are too many things in legend
