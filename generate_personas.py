@@ -202,14 +202,15 @@ def convert_persona_to_string(persona, demos_to_include, pid=None):
     else:
         s = f'{pid}. '
     if 'name' in demos_to_include:
-        name = ' '.join(persona['name'])
+        #name = ' '.join(persona['name'])
+        name = persona['name']
         s += f'{name} - '
     for pos, demo in enumerate(demos_to_include):
         if demo != 'name':
             if demo == 'age':
                 s += f'age {persona[demo]}, '  # specify age so GPT doesn't get number confused with ID
             elif demo == 'interests' and pos > 0:  # not first demo
-                s += f'interests include: {persona[demo]}, '
+                s += f'attributes: {persona[demo]}, '
             else:
                 s += f'{persona[demo]}, '
     s = s[:-2]  # remove trailing ', '
@@ -259,23 +260,37 @@ def parse_name_response(response):
     else:
         raise Exception('Response contains more than two words')
 
+def get_interest_examples(network_type):
+    messages = []
+    messages.append({"role": "user", "content": f"I am generating a network graph of [{network_type}], generate 100 examples of special interests or specific personality traits or anything else about a user that might influence how they connect in a network graph like this one, which could be relevant in the context of [{network_type}]. Provide no markdown or extra text or niceties, don't number the list, just put commas between them"})
 
-def generate_interests(personas, demos, model, verbose=False):
+    response = get_llm_response('gpt-4o', messages, savename=None, temp=DEFAULT_TEMPERATURE, verbose=False)
+
+    return response
+
+def generate_interests(personas, demos, model, network_type, verbose=False):
     """
     Generate interests, using GPT, for a list of personas.
     """
+
+    interest_examples = get_interest_examples(network_type)
+    print("interest_examples", interest_examples)
     for nr in personas:
-        prompt = f'In 10-25 words, describe the varied interests that the following person might have:\n'
+        prompt = f'In 10-25 words, describe the varied interests/traits/facts about the following person might have that would be relevant to a social network graph of type [{network_type}]:\n'
         rand_order = np.random.choice(len(demos), replace=False, size=len(demos))  # shuffle order of demographics
         for idx in rand_order:
             demo = demos[idx]
             prompt += f'{demo}: {personas[nr][demo]}\n'
-        prompt += 'Answer by providing ONLY their interests. Do not include filler like "She enjoys" or "He has a keen interest in".'
+        prompt += 'Answer by providing ONLY the relevant interests/traits/facts. Don\'t repeat the demographic facts already given to you in the prompt. Do not include filler like "She enjoys" or "He has a keen interest in". Give all answers in comma separated format.'
 
         prompt += """
-Here are some examples of possible interests:
-Reading, Writing, Drawing, Painting, Photography, Gardening, Cooking, Baking, Traveling, Hiking, Running, Cycling, Swimming, Camping, Fishing, Hunting, Rock climbing, Surfing, Skiing, Snowboarding, Skateboarding, Yoga, Meditation, Weightlifting, Pilates, Dancing, Singing, Playing guitar, Playing piano, Playing violin, Playing drums, Playing flute, Playing ukulele, Playing chess, Solving puzzles, Playing video games, Board games, Card games, Collecting stamps, Collecting coins, Collecting antiques, Collecting comic books, Collecting action figures, Collecting postcards, Collecting toys, Knitting, Crocheting, Sewing, Quilting, Embroidery, Origami, Calligraphy, Scrapbooking, Woodworking, Metalworking, Pottery, Sculpting, Model building, Home brewing, Wine tasting, Beer tasting, Coffee brewing, Tea appreciation, Cooking international cuisines, Gardening succulents, Interior decorating, DIY home improvement, Antique restoration, Restoring furniture, Making jewelry, Making candles, Making soap, Watching movies, Watching TV series, Watching documentaries, Watching anime, Writing poetry, Writing novels, Writing scripts, Blogging, Vlogging, Podcasting, Public speaking, Stand-up comedy, Acting, Directing, Producing films, Photography editing, Graphic design, Digital art, Animation, 3D modeling, Web design, Programming, Learning new languages, Studying history, Studying science, Astronomy, Astrology, Biology, Physics, Chemistry, Geology, Meteorology, Archaeology, Anthropology, Psychology, Sociology, Political science, Economics, Business management, Entrepreneurship, Marketing, Sales strategy, Investing, Trading stocks, Cryptocurrency, Real estate, Personal finance, Budgeting, Minimalism, Sustainability, Environmental activism, Animal rights activism, Human rights activism, Volunteering, Charity work, Fundraising, Mentoring, Tutoring, Teaching, Parenting, Pet care, Dog training, Cat care, Horseback riding, Birdwatching, Wildlife photography, Wildlife conservation, Marine biology, Scuba diving, Snorkeling, Free diving, Kayaking, Canoeing, Sailing, Rowing, Powerboating, Motorcycling, Driving, Car racing, Bicycle touring, Backpacking, Trail running, Ultra running, Triathlon, Marathon running, Powerlifting, CrossFit, Boxing, Martial arts, Judo, Karate, Taekwondo, Brazilian Jiu-Jitsu, Krav Maga, Fencing, Archery, Shooting sports, Golf, Tennis, Table tennis, Badminton, Squash, Racquetball, Cricket, Baseball, Softball, Basketball, Football, Soccer, Rugby, Hockey, Field hockey, Ice hockey, Lacrosse, Volleyball, Beach volleyball, Bowling, Darts, Billiards, Kite flying, Kiteboarding, Paragliding, Hang gliding, Skydiving, Bungee jumping, Parkour, Urban exploration, Travel photography, Historical site visits, Museum hopping, Theme park visits, Escape rooms, Magic tricks, Illusion shows, Playing with drones, Drone photography, RC cars, RC planes, RC boats, Geocaching, Treasure hunting, Metal detecting, Prospecting, Stargazing, Astrophotography, Meteor shower watching, Northern lights watching, Camping under the stars, Storytelling, Improvisation, Debating, Philosophy, Ethics, Religion, Spirituality, Tarot reading, Crystal healing, Reiki, Acupuncture, Herbal medicine, Holistic health, Nutrition, Dieting, Weight management, Fitness tracking, Personal training, Sports coaching, Event planning, Hosting parties, Social media management, Online community building, E-sports, Speedrunning, Gaming live streams, Tech reviews, Unboxing videos, ASMR, Sound design, Music production, Beatboxing, DJing, Singing in a choir, Musical theater, Opera, Ballet, Classical music, Jazz music, Blues music, Country music, Hip-hop, Rap, Pop music, Rock music, Heavy metal, Punk rock, Folk music, World music, Reggae, EDM, Trance music, Ambient music, Lo-fi beats, Collecting vinyl records, Watching live concerts, Attending music festivals, Event photography, Fashion photography, Street photography, Nature photography, Macro photography, Film photography, Darkroom development, Digital photo editing, Restoring old photos, Wedding photography, Pet photography, Food photography, Interior photography, Landscape photography, Cityscape photography, Architectural photography, Abstract photography, Panoramic photography, Night photography, Aerial photography, Underwater photography, Forensic photography, Documentary photography, Journalism, Investigative reporting, Editing, Proofreading, Translation, Transcription, Copywriting, Technical writing, Grant writing, Science writing, Medical writing, Business writing, Legal writing, Screenwriting, Playwriting, Ghostwriting, Creative writing, Writing children's books, Writing fantasy novels, Writing science fiction, Writing historical fiction, Writing thrillers, Writing romance novels, Writing self-help books, Writing memoirs, Writing essays, Writing blogs, Creating memes, Posting on social media, Influencing, Public relations, Marketing campaigns, Advertising, SEO optimization, Analytics, Data science, Machine learning, AI development, Natural language processing, Big data, Cloud computing, Cybersecurity, Game development, App development, Web development, Blockchain, Augmented reality, Virtual reality, IoT, Quantum computing, Space exploration, Rocket science, Satellite technology, Nanotechnology, Bioinformatics, Genetics, Genomics, Proteomics, Epigenetics, Synthetic biology, Cognitive science, Neuroscience, Behavioral science, Social psychology, Organizational behavior, Learning theories, Educational psychology, Pedagogy, Curriculum design, Ed-tech, Digital literacy, Open-source projects, Cryptography, Algorithm design, Simulation, 3D printing, Materials science, Renewable energy, Sustainable agriculture, Urban planning, Transport design, Climate activism, Carbon offsetting, Green tech, Energy storage, Battery technology, Electric vehicles, Autonomous vehicles, Flying cars, Deep-sea exploration, Oceanography, Coral reef studies, Aquaculture, Desalination, Water purification, Agronomy, Agroforestry, Hydroponics, Vertical farming, Perennial crops, Soil science, Permaculture, Agroecology, Ecosystem restoration, Rewilding, Urban rewilding, Microbiome research, Bacteriology, Virology, Immunology, Pathology, Pharmacology, Toxicology, Epidemiology, Biostatistics, Health informatics, Telemedicine, Healthcare policy, Health economics, Public health, Medical anthropology, Forensic science, Criminology, Law enforcement, Emergency response, Firefighting, Search and rescue, Military strategy, Defense technology, Peacekeeping, Humanitarian aid, Crisis management, Disaster recovery, Refugee support, Global development, Microfinance, Social entrepreneurship, Community building, Social capital, Civic engagement, Participatory design, Citizen science, Crowdsourcing, Open innovation, Human-centered design, UX/UI design, Game theory, Behavioral economics, Financial modeling, Risk management, Actuarial science, Accounting, Auditing, Tax planning, Business strategy, Operations management, Supply chain logistics, Lean manufacturing, Process improvement, Industrial engineering, Engineering management, Product design, Market research, Consumer behavior, Retail trends, E-commerce, International trade, Economic policy, Development economics, Public administration, Urban governance, Regional planning, Housing policy, Transportation policy, Energy policy, Food policy, Education policy, Social policy, Environmental policy, Labor policy, Tax policy, Trade policy, Technology policy, Media policy, Cultural policy, Security policy, Peace studies, Conflict resolution, Negotiation, Diplomacy, International relations, Geopolitics, Global health, Global education, Global finance, Global justice, Ethnography, Qualitative research, Quantitative research, Mixed-methods research, Data visualization, Information design, Knowledge management, Organizational learning, Change management, Leadership development, Team building, Employee engagement, Cultural competence, Diversity and inclusion, Work-life balance, Remote work, Digital transformation, Innovation ecosystems, Disruptive technology, Future studies, Scenario planning, Strategic foresight, Resilience planning, Risk assessment, Crisis communication, Brand management, Corporate social responsibility, Sustainability reporting, Ethical leadership, Servant leadership, Transformational leadership, Authentic leadership, Adaptive leadership, Emotional intelligence, Social intelligence, Cognitive intelligence, Artificial intelligence, Human-machine interaction, Cyber-physical systems, Digital twin technology, Edge computing, Fog computing, Serverless computing, DevOps, Continuous integration, Software testing, Quality assurance, Reliability engineering, Performance engineering, Systems architecture, Enterprise architecture, Solution architecture, Cloud architecture, Distributed systems, Concurrency, Parallel computing, Grid computing, Cluster computing, High-performance computing, Numerical simulation, Computational biology, Computational chemistry, Computational physics, Computational linguistics, Computational neuroscience, Neural networks, Deep learning, Reinforcement learning, Transfer learning, Few-shot learning, Self-supervised learning, Semi-supervised learning, Unsupervised learning, Graph learning, Time-series analysis, Speech recognition, Natural language generation, Image recognition, Video recognition, Emotion recognition, Pattern recognition, Facial recognition, Object detection, Pose estimation, Motion capture, Scene understanding, Semantic segmentation, Instance segmentation, Keypoint detection, Optical character recognition, Machine translation, Text summarization, Text-to-speech, Speech-to-text, Text mining, Opinion mining, Sentiment analysis, Topic modeling, Named entity recognition, Knowledge graph construction, Ontology engineering, Semantic web, Linked data, Open data, Crowdsourced data, Big data analytics, Data cleaning, Data wrangling, Feature engineering, Model selection, Hyperparameter tuning, Ensemble methods, Boosting algorithms, Bayesian inference, Probabilistic programming, Monte Carlo methods, Markov models, Game playing AI, Robotics, Autonomous systems, Self-driving cars, Space robotics, Medical robotics, Agricultural robotics, Underwater robotics, Drone technology, Exoskeletons, Bionics, Prosthetics, Assistive technology, Wearable devices, Augmented reality glasses, Virtual reality headsets, Haptics, Brain-computer interfaces, Neural prosthetics, Neurotechnology, Digital therapeutics, Telehealth, Mobile health, Precision medicine, Personalized medicine, Pharmacogenomics, Therapeutic innovation, Medical imaging, Diagnostic imaging, 3D printing in healthcare, Tissue engineering, Regenerative medicine, Stem cell research, Organoid research, Bioengineering, Synthetic organs, Artificial intelligence in healthcare, Medical decision support systems, Clinical trials, Translational research, Health outcomes research, Comparative effectiveness research, Implementation science, Global health equity, Healthcare accessibility, Health systems strengthening, Health policy advocacy, Patient advocacy, Digital health startups, Health tech entrepreneurship, Social determinants of health, Health equity, Global health diplomacy, Healthcare innovation
+Here are some examples of possible things to work with:
+"""+interest_examples+"""
+
+If you choose to use any general idea, instead replace it with a specific example. For example, "workplace" might become "Works in retail". "Degree of stubbornness" might be replaced with "very stubborn" or "not stubborn". "celebrity fandom" might be replaced with "avid fan of Taylor Swift". "community issues" might become "African-American social issues". Etc. But don't use the specific examples I just gave.
 """
+
+        print("prompt", prompt)
         interests, _, _ = repeat_prompt_until_parsed(model, None, prompt, parse_interest_response, {}, max_tries=3,
                                                      temp=NAMES_TEMPERATURE, verbose=verbose)
         personas[nr]['interests'] = interests
@@ -457,6 +472,8 @@ def parse():
     parser.add_argument('save_name', type=str, help='What is the name of the file where you would like to save the personas?')
     parser.add_argument('--include_names',  action='store_true', help='Would you like to add names to the personas?')
     parser.add_argument('--include_interests',  action='store_true', help='Would you like to add interests to the personas?')
+    parser.add_argument('--network_type', type=str, default='A real life group of people who live in a small town')
+    parser.add_argument('--network_name', type=str, default='')
     parser.add_argument('--model', type=str, default='gpt-3.5-turbo', help='Which model would you like to use for generating names/interests?')
 
     args = parser.parse_args()    
@@ -487,7 +504,10 @@ if __name__ == '__main__':
     # generate interests
     if args.include_interests:
         save_name += '_w_interests'
-        personas = generate_interests(personas, demos_to_include, args.model)
+        personas = generate_interests(personas, demos_to_include, args.model, args.network_type)
+
+    if args.network_name and args.network_name != '':
+        save_name += '_' + args.network_name
 
     # save json
     fn = os.path.join(PATH_TO_TEXT_FILES, save_name + '.json')

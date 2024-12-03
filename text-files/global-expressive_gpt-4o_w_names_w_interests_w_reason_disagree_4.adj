@@ -1,0 +1,53 @@
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 10 --include_interests --include_reason --num_processes 10 --include_names --network_type A network of people who disagree with one another, a connection means they have had a serious disagreement --network_name disagree --connection_description has long-standing disagreement with
+# GMT Sat Nov 30 02:47:25 2024
+# 
+6 18 47 28 41
+48 11 21 34 15 23 12 10
+11 7 25 18 34
+4 35 2 15 17
+12 21 34
+31 14 28 19 26 45 37 36
+7 1 44 42 15 40 19
+25 22 17
+41 47 3
+18 23 2 32 28 24 38
+22 10 20 26 30
+28 8
+33 36 24 43 38
+15 30 42
+16 27 45 39 47 10
+27 44 40 47
+37 13
+20 45 49 46 26 44 1
+24 32 38 42 29 39 9
+47
+13 39 30 8 42
+10 30 29 35 49 1
+19 21
+29 38 9
+42 1 30 8 49
+45 26
+26 3 35 30
+32 39 38 44 3 1
+17
+44 23
+34 21 49
+14 36 0
+2 46
+43 8 5
+35 46
+21
+0 36
+3 38 23 1
+38 9
+36
+49 1
+30
+39 1
+9
+8
+23
+40 1
+1
+5 46
+46

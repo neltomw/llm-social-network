@@ -8,7 +8,7 @@ import time
 import multiprocessing as mp
 from functools import partial
 
-def generate_single_network(seed, args, personas, pids, save_prefix, demos_to_include):
+def generate_single_network(seed, args, personas, pids, save_prefix, demos_to_include, network_type, connection_description='is connected to'):
     """
     Generate a single network with the given seed. This function will be run in parallel.
     """
@@ -22,7 +22,7 @@ def generate_single_network(seed, args, personas, pids, save_prefix, demos_to_in
         mean_choices=args.mean_choices if args.mean_choices > 0 else None,
         include_reason=args.include_reason, all_demos=args.prompt_all, 
         only_degree=not args.include_friend_list, temp=args.temp, 
-        num_iter=args.num_iter, verbose=args.verbose)
+        num_iter=args.num_iter, verbose=args.verbose, network_type=network_type, connection_description=connection_description)
     
     # Save network and plot
     save_network(G, f'{save_prefix}_{seed}')
@@ -66,9 +66,24 @@ def get_persona_format(demos_to_include):
     persona_format = persona_format[:-2]  # remove trailing ', '
     return persona_format
 
+def get_network_advice(network_type, num_users):
+    messages = []
+    messages.append({"role": "user", "content": f"I am generating a network graph of [{network_type}], with {num_users} total users. Each connection between a user represents a connection of type [{network_type}]. Keep that in mind when generating your advice. I need you to give advice to yourself about what kinds of rules to follow when creating connections between users. What range should the number of connections each user has be? What if they are very introverted, introverted, neutral, extroverted, very extroverted? Should connections be based on demographics, interests, or something else? Should connections-of-connections (friends of friends?) be used to help decide which users should be connected? Should fully-connected groups of users be created, and if so, what general criteria should be used? What are some general guidelines to follow when creating this network? Please return your very explicit advice, without any niceities or extra text, just the advice."})
+
+    response = get_llm_response('gpt-4o', messages, savename=None, temp=DEFAULT_TEMPERATURE, verbose=False)
+
+    return response
+
+def get_relationship_examples(network_type):
+    messages = []
+    messages.append({"role": "user", "content": f"I am generating a network graph of [{network_type}], generate 100 examples of reasons why two people might be connected in a network graph like this one. Try to be realistic to this specific type of network. Provide no markdown or extra text or niceties, don't number the list, just put newlines between them"})
+
+    response = get_llm_response('gpt-4o', messages, savename=None, temp=DEFAULT_TEMPERATURE, verbose=False)
+
+    return response
 
 def get_system_prompt(method, personas, demos_to_include, curr_pid=None, G=None, 
-                      only_degree=True, num_choices=None, include_reason=False, all_demos=False):
+                      only_degree=True, num_choices=None, include_reason=False, all_demos=False, network_type='', connection_description='is connected to'):
     """
     Get content for system message.
     """
@@ -83,6 +98,7 @@ def get_system_prompt(method, personas, demos_to_include, curr_pid=None, G=None,
 
     print("demos_to_include", demos_to_include)
 
+
     # commonly used strings
     persona_format = get_persona_format(demos_to_include)
     persona_format = f'where each person is described as \"{persona_format}\"'
@@ -96,265 +112,21 @@ def get_system_prompt(method, personas, demos_to_include, curr_pid=None, G=None,
         prompt = 'Your task is to create a realistic social network. You will be provided a list of people in the network, ' + persona_format + '. Provide a list of friendship pairs in the format ID, ID with each pair separated by a newline. ' + prompt_extra
 
     elif method == 'global-expressive':
+        relationship_examples = get_relationship_examples(network_type)
+        network_advice = get_network_advice(network_type, len(personas))
+        print("network_advice", network_advice)
+        
         if include_reason:
             #Each user should choose a wide array of connections, depending on their sociability [between 2 and 30] (very introverted people may only have 2 or 4, introverts might have 6, neutral people might have 10, extroverts might have 14, very extroverted people may have 20 connections or more).
 
             prompt = """
-Your task is to create a realistic social network. You will be provided a list of people in the network, {persona_format}. Don't rely fully on demographic information or interests to make connections, feel free to make things up. Here are 150 examples of potential types of relationships you could make up between the people in the network:
+Your task is to create a realistic social network. The network type is ["""+network_type+"""]. You will be provided a list of people in the network, """+persona_format+""". Don't rely fully on demographic information or interests to make connections, feel free to make things up. Please try to be realistic to this type of network. Here are 150 examples of potential types of relationships you could make up between the people in the network:
 
-Family relationship (e.g., parent, sibling, cousin)
-Romantic relationship (e.g., spouse, partner)
-Is the parent of
-Is the child of
-Is the sibling of
-Is the cousin of
-Is married to
-Is divorced from
-Is the grandparent of
-Is the grandchild of
-Is the step-parent of
-Is the stepchild of
-Is the aunt/uncle of
-Is the niece/nephew of
-Is the in-law of
-Is the godparent of
-Is the godchild of
-Is the foster parent of
-Is the foster child of
-Is the half-sibling of
-Is engaged to
-Is the ex-partner of
-Met at a family reunion
-Grew up together in the same household
-Was adopted by
-Shares a distant ancestor with
-Is the descendant of
-Is the ancestor of
-Is the legal guardian of
-Was raised by
-Is the twin of
-Is the biological child of
-Was separated at birth from
-Is the child of a close friend of
-Is in a blended family with
-Is a cousin through marriage to
-Is in a long-term relationship with
-Is the boyfriend/girlfriend of
-Met on a blind date with
-Met on a dating app
-Had a one-night stand with
-Is romantically interested in
-Had an unrequited love for
-Was a high school sweetheart of
-Was a college partner of
-Broke up with
-Is currently dating
-Had a summer fling with
-Was a secret lover of
-Is in an open relationship with
-Was engaged to
-Met through a mutual friend
-Is the co-worker of
-Is the boss of
-Is the subordinate of
-Is the mentor of
-Is the mentee of
-Was hired by
-Was fired by
-Worked on a project together with
-Shared an office with
-Attended the same job training as
-Was a competitor for the same job as
-Took over the role of
-Referred for a job by
-Was laid off at the same time as
-Shared an internship with
-Was a classmate of
-Was a college roommate of
-Sat next to in class
-Was a lab partner of
-Was in the same graduating class as
-Was a teacher of
-Was a student of
-Met during an extracurricular activity at school
-Shared a study group with
-Went on a school trip with
-Met at a party
-Was introduced by a mutual friend
-Met at a coffee shop
-Sat next to on a plane
-Was a pen pal of
-Shared a taxi ride with
-Met during a vacation
-Met in line for an event
-Was a neighbor of
-Ran into each other at a grocery store
-Volunteered together at a charity
-Organized an event with
-Was a fellow member of a church group
-Was in the same sports team as
-Was a co-organizer of a community project
-Miscellaneous
-Met at a hospital
-Shared the same Airbnb with
-Connected on a social media platform
-Was a fellow attendee of a concert
-Was in the same book club as
-Was a member of the same fan club
-Participated in the same online challenge as
-Was a fellow gamer in an online team
-Took the same guided tour with
-Had a chance meeting during a natural disaster evacuation
-Co-worker at the same company
-Classmate in the same school
-Neighbor in the same residential area
-Member of the same sports team
-Member of the same religious group
-Member of the same hobby club
-Fellow volunteer in a charity organization
-Friend from childhood
-Shared attendance at the same event
-Connected through a mutual friend
-Business partner
-Shared participation in an online forum
-Collaborator on a research project
-Fellow student in an online course
-Fellow activist in a political movement
-Shared membership in a professional organization
-Alumni of the same university
-Mentor-mentee relationship
-Employer-employee relationship
-Supplier-customer relationship
-Competitor in the same industry
-Attendee of the same workshop or seminar
-Members of the same online gaming guild
-Fellow attendees at a conference
-Co-author of a publication
-Connection through social media (e.g., Facebook, LinkedIn)
-Buyer-seller connection in a marketplace
-Trainer-trainee relationship
-Roommates or housemates
-Fellow travelers on the same trip
-Shared participation in a fitness class
-Fellow attendees of the same concert
-Coach-player relationship
-Shared subscription to the same book club
-Connection through a dating app
-Members of the same advocacy group
-Fellow parents at a PTA meeting
-Connection through a shared hobby (e.g., photography)
-Part of the same creative team (e.g., film, theater)
-Shared interest in a specific fandom
-Followers of the same influencer
-Shared lineage (e.g., ancestry website match)
-Collaboration on a community project
-Connection via mutual investment in a startup
-Members of the same fraternity or sorority
-Fellow attendees of a protest
-Fellow players in the same e-sports team
-Shared interest in a podcast or show=
-Fellow pet owners in a pet meetup group
-Attendees of the same religious pilgrimage
-Co-owners of a shared property
-Members of the same recovery group (e.g., AA)
-Connection through a shared language exchange program
-Shared attendance at a summer camp
-Fellow bloggers or content creators in a niche
-Fellow shareholders in a company
-Connection through crowdfunding (e.g., Kickstarter backers)
-Fellow competitors in a hackathon
-Connection via matchmaking by a mutual acquaintance
-Shared participation in a book-writing group
-Fellow volunteers in disaster relief
-Connection via a tutoring relationship
-Members of the same virtual reality community
-Shared attendance at a TED Talk
-Connection through philanthropic donations
-Members of the same fantasy sports league
-Fellow team members in a corporate retreat
-Shared residency in the same dormitory
-Connection through a common hairstylist
-Fellow patients in a group therapy session
-Connection through the same personal trainer
-Members of the same wine-tasting club
-Fellow participants in a survival skills course
-Connection through a sports fantasy league
-Members of the same investment club
-Connection via a live-streaming platform
-Members of the same makerspace or fab lab
-Fellow passengers on a long-term expedition
-Shared enrollment in a language class
-Connection through dog-walking groups
-Fellow organizers of a fundraising event
-Connection through a shared interest in genealogy
-Fellow debaters in a debate club
-Shared work in community gardening
-Connection via hosting on the same platform (e.g., Airbnb)
-Fellow members of a hackspace
-Fellow participants in a cooking class
-Connection via a shared personal chef
-Members of the same stock market discussion group
-Fellow members of a cosplay group
-Connection through a mutual yoga instructor
-Shared involvement in the same political campaign
-Members of the same study-abroad program
-Connection via shared public transport routes
-Fellow gamers in a live-streaming community
-Shared membership in a music band
-Fellow advocates in a legal case
-Connection through shared intellectual property rights
-Members of the same neighborhood watch group
-Connection through the same barbershop
-Fellow gig workers on the same platform
-Shared participation in a science fair
-Connection through the same tour guide
-Members of the same chess club
-Fellow contributors to open-source projects
-Fellow members of a trivia team
-Shared activity in a bike-sharing group
-Members of the same farmers’ market cooperative
-Fellow members of a local theater troupe
-Connection through the same babysitter
-Shared attendance at a pop culture convention
-Fellow subscribers of a niche magazine
-Members of the same astronomy club
-Shared interest in rare collectibles (e.g., stamps, coins)
-Fellow carpool participants
-Shared roles in a neighborhood clean-up initiative
-Members of the same singing ensemble
-Fellow writers in a scriptwriting circle
-Connection through a shared music teacher
-Members of the same carpentry workshop
-Shared visits to the same travel destinations
-Fellow members of an online trivia league
-Shared investment in a co-op business
-Members of the same pottery class
-Connection through shared library memberships
-Fellow painters in an art class
-Connection through a local history group
-Fellow attendees of a philosophy seminar
-Members of the same hiking club
-Fellow birdwatchers in the same reserve
-Shared participation in the same fitness app challenges
-Connection via shared attendance at a retreat
-Fellow participants in a marathon training group
-Connection via shared usage of a delivery service
-Members of the same photography darkroom
-Shared activities at a robotics workshop
-Fellow innovators in a tech incubator
-Shared advocacy for environmental causes
-Members of the same urban farming group
-Connection via mentorship in an incubator program
-Fellow attendees at a stargazing event
-Connection through local artisan crafts fairs
-Members of the same improv comedy group
-Fellow influencers in the same niche market
-Connection through shared medical conditions
-Shared interest in speed dating events
-Members of the same cryptocurrency discussion group
-Fellow hosts of a joint podcast
+"""+relationship_examples+"""
 
-You will start by initially creating a number of groups of users who are all connected to each other. You decide how many groups to make and how many users to put in each group. The network should make sense. The format will be like this:
+You will start by initially creating a number of groups of users who are all connected to each other. You decide how many groups to make and how many users to put in each group. The network should make sense. Don't include any groups if it doesn't make sense to do so in this network. Include as many as you want. The format will be like this:
+
+Here is some advice that you have previously provided on how to create the connections in this network: """+network_advice+"""
 
 Don't add any extra markdown to your response, follow the format exactly as it is presented here.
 
@@ -404,8 +176,6 @@ The user connections are ID1, ID2, ID3, ..., IDX"
 
 Each user should choose a wide array of connections, depending on their sociability, very introverted people will have a small number of connections, very extroverted people will have a large number of connections.
 
-Specifics about this social graph: I want several tight-knit communities, I want the network graph to have a high clustering coefficient.
-
 Then you will output a new line ad move on to the next user, until you have completed this task for all the users in the list.
 
 Your output will end up looking something like this:
@@ -439,7 +209,50 @@ The user connections are 7, 8
 
 ...
 
-Make sure you do this FOR EVERY SINGLE USER, no matter how long your response needs to be. YOU NEED TO DO THIS FOR EVERY USER, IN ORDER, UNTIL YOU GET TO THE BOTTOM OF THE LIST.
+Make sure you do this FOR EVERY SINGLE USER, no matter how long your response needs to be. This list of examples was generated without knowledge of the type of network that would be built, so make sure to change the reasons, the number of connections, the number of groups, etc, based on the specific network type which is ["""+network_type+"""]. YOU NEED TO DO THIS FOR EVERY USER, IN ORDER, UNTIL YOU GET TO THE BOTTOM OF THE LIST.
+"""
+
+
+
+
+            prompt = """
+Your task is to create a realistic social network. The network type is ["""+network_type+"""]. You will be provided a list of people in the network, """+persona_format+""". Don't rely fully on demographic information or interests to make connections, feel free to make things up. Please try to be realistic to this type of network. Here are 150 examples of topics related to potential motives for connections, to keep in mind as you build this network:
+
+"""+relationship_examples+"""
+
+Here is some advice that you have previously provided on how to create the connections in this network: 
+----------------
+"""+network_advice+"""
+----------------
+
+You will start by initially creating a number of groups of users who are all connected to each other according to the criteria ["""+network_type+"""]. You decide how many groups to make and how many users to put in each group. ONLY MAKE A GROUP IF EVERY SINGLE USER IN THE GROUP WOULD BE CONNECTED TO EVERY OTHER USER IN THE GROUP ACCORDING TO ["""+network_type+"""]. If you are looking to create simple indivdual connections between users, you can do that later in the user by user section. The network should make sense. The format will be like this:
+
+Don't add any extra markdown to your response, follow the format exactly as it is presented here.
+
+GROUPS
+
+Group: This group all has connections to one another that match ["""+network_type+"""]. Each user """+connection_description+""" each other user in the group because REASON. There are X users in this group.
+Group Users Names: USERNAME1, ..., USERNAMEX
+Group User IDs: USERID1, ..., USERIDX
+
+AND you will create connections between individual users. The format will be like this:
+
+For each and every user in the list, you will output text matching this format, but for that specific user, with their specific preferences accounted for: 
+
+USERS
+
+User USERID
+NAME is DEMOGRAPHICS_DATA_ABOUT_USER, and """+connection_description+""" X users.
+NAME """+connection_description+""" NAME1 (user USERID1) because REASON1
+...
+NAME """+connection_description+""" NAMEX (user USERIDX) because REASONX
+The user connections are USERID1, USERID2, ..., USERIDX
+
+The number of connections that each user has depends on that user's specific personality and description, take this into account when determining how many other users they will connect with according to ["""+network_type+"""].
+
+Then you will output a new line and move on to the next user, until you have completed this task for all the users in the list.
+
+Make sure you do this FOR EVERY SINGLE USER, no matter how long your response needs to be. Make sure each user is connected to at least one other user. Make sure to change the reasons, the number of connections, the number of groups, etc, based on the specific network type which is ["""+network_type+"""]. YOU NEED TO DO THIS FOR EVERY USER, IN ORDER, UNTIL YOU GET TO THE BOTTOM OF THE LIST.
 """
         else:
             prompt = """
@@ -450,7 +263,7 @@ You are a GENDER, age AGE, RACE, RELIGION, POLITICS, interests include: INTEREST
 You are connected with the users ID1, ID2, ID3, ID4, ID5, ..., IDX"
 
 Each user should choose between 7 and 15 friends from the list.
-Then you will output a new line ad move on to the next user, until you have completed this task for all the users in the list.
+Then you will output a new line and move on to the next user, until you have completed this task for all the users in the list.
 
 Your output will end up looking something like this:
 
@@ -468,6 +281,8 @@ You are connected with the users 7, 11, 8, 40, 32
 
 ..."""
         prompt += prompt_extra
+
+        print("prompt", prompt)
     
     elif method in {'local', 'sequential'}:
         prompt = prompt_personal + ' You are joining a social network.\n\nYou will be provided a list of people in the network, ' + persona_format
@@ -603,6 +418,7 @@ def update_graph_from_response(method, response, G, curr_pid=None, include_reaso
     elif method == 'global-expressive':
         user_count = 0
         edge_count = 0
+        id_edge_count = 1
         id1 = "0"
         for line in lines:
             print("line", line)
@@ -614,14 +430,19 @@ def update_graph_from_response(method, response, G, curr_pid=None, include_reaso
                             edges_found.append((groupId1.strip(), groupId2.strip()))
             if line[:5] == "User ":
                 id1 = line.replace("User ", "").strip()
+                print("id_edge_count", id_edge_count)
+                assert id_edge_count > 0
+                id_edge_count = 0
                 user_count = user_count + 1
             if "The user connections are " in line:
                 id2s = line.split("The user connections are ")[1].strip().split(',')
-                for id2 in id2s[1:]:
+                for id2 in id2s:
                     #print("id1", id1.strip(), "id2", id2.strip())
-                    if id1.strip() != id2.strip():
+                    if id1.strip() != id2.strip() and id2.strip() != '':
                         edges_found.append((id1.strip(), id2.strip()))
                         edge_count = edge_count + 1
+                        id_edge_count += 1
+                assert len(id2s) >= 1
         assert user_count > 50 - 5
         assert len(edges_found) > 50
         assert edge_count > 50
@@ -687,7 +508,7 @@ def update_graph_from_response(method, response, G, curr_pid=None, include_reaso
     
     
 def generate_network(method, demos_to_include, personas, order, model, mean_choices=None, include_reason=False, 
-                     all_demos=False, only_degree=True, num_iter=3, temp=None, verbose=False):
+                     all_demos=False, only_degree=True, num_iter=3, temp=None, verbose=False, network_type='', connection_description='is connected to'):
     """
     Generate entire network.
     """
@@ -700,7 +521,7 @@ def generate_network(method, demos_to_include, personas, order, model, mean_choi
     total_output_toks = 0
     
     if method == 'global':
-        system_prompt = get_system_prompt(method, personas, demos_to_include, all_demos=all_demos)
+        system_prompt = get_system_prompt(method, personas, demos_to_include, all_demos=all_demos, network_type=network_type)
         user_prompt = get_user_prompt(method, personas, order, demos_to_include)
         parse_args = {'method': method, 'G': G}
         G, response, num_tries = repeat_prompt_until_parsed(model, system_prompt, user_prompt, update_graph_from_response,
@@ -710,7 +531,7 @@ def generate_network(method, demos_to_include, personas, order, model, mean_choi
         total_output_toks += len(response.split())
     
     elif method == 'global-expressive':
-        system_prompt = get_system_prompt(method, personas, demos_to_include, all_demos=all_demos, include_reason=include_reason)
+        system_prompt = get_system_prompt(method, personas, demos_to_include, all_demos=all_demos, include_reason=include_reason, network_type=network_type, connection_description=connection_description)
         user_prompt = get_user_prompt(method, personas, order, demos_to_include)
         parse_args = {'method': method, 'G': G}
         #print("system_prompt", system_prompt)
@@ -731,11 +552,11 @@ def generate_network(method, demos_to_include, personas, order, model, mean_choi
                 num_choices = int(min(max(np.random.exponential(mean_choices), 1), 20))
             if node_num < 3:  # for first three nodes, use local
                 system_prompt = get_system_prompt('local', personas, demos_to_include, curr_pid=pid,
-                                    num_choices=num_choices, include_reason=include_reason, all_demos=all_demos)
+                                    num_choices=num_choices, include_reason=include_reason, all_demos=all_demos, network_type=network_type)
                 user_prompt = get_user_prompt('local', personas, order, demos_to_include, curr_pid=pid)
             else:  # otherwise, allow local or sequential
                 system_prompt = get_system_prompt(method, personas, demos_to_include, curr_pid=pid, 
-                    num_choices=num_choices, include_reason=include_reason, all_demos=all_demos, only_degree=only_degree)
+                    num_choices=num_choices, include_reason=include_reason, all_demos=all_demos, only_degree=only_degree, network_type=network_type)
                 user_prompt = get_user_prompt(method, personas, order, demos_to_include, curr_pid=pid,
                                                G=G, only_degree=only_degree)
             parse_args = {'method': method, 'G': G, 'curr_pid': pid, 'num_choices': num_choices, 'include_reason': include_reason}
@@ -758,7 +579,7 @@ def generate_network(method, demos_to_include, personas, order, model, mean_choi
             else:
                 num_choices = int(max(np.random.exponential(mean_choices), 1))
             system_prompt = get_system_prompt('local', personas, demos_to_include, curr_pid=pid,
-                                num_choices=num_choices, include_reason=include_reason, all_demos=all_demos)
+                                num_choices=num_choices, include_reason=include_reason, all_demos=all_demos, network_type=network_type)
             user_prompt = get_user_prompt('local', personas, order, demos_to_include, curr_pid=pid)
             parse_args = {'method': 'local', 'G': G, 'curr_pid': pid, 'num_choices': num_choices, 'include_reason': include_reason}
             G, response, num_tries = repeat_prompt_until_parsed(model, system_prompt, user_prompt, 
@@ -776,7 +597,7 @@ def generate_network(method, demos_to_include, personas, order, model, mean_choi
             order3 = np.random.choice(order2, size=len(order2), replace=False)  # order of rewiring nodes
             for pid in order3:  # iterate through nodes and rewire
                 system_prompt = get_system_prompt('iterative-add', personas, demos_to_include, 
-                        curr_pid=pid, G=G, include_reason=include_reason, all_demos=all_demos)
+                        curr_pid=pid, G=G, include_reason=include_reason, all_demos=all_demos, network_type=network_type)
                 user_prompt = get_user_prompt('iterative-add', personas, None, demos_to_include, 
                                               curr_pid=pid, G=G)
                 parse_args = {'method': 'iterative-add', 'G': G, 'curr_pid': pid, 'include_reason': include_reason}
@@ -792,7 +613,7 @@ def generate_network(method, demos_to_include, personas, order, model, mean_choi
                 friends = list(G.neighbors(pid))
                 if len(friends) > 1:
                     system_prompt = get_system_prompt('iterative-drop', personas, demos_to_include, 
-                            curr_pid=pid, G=G, include_reason=include_reason, all_demos=all_demos)
+                            curr_pid=pid, G=G, include_reason=include_reason, all_demos=all_demos, network_type=network_type)
                     user_prompt = get_user_prompt('iterative-drop', personas, None, demos_to_include, 
                                                   curr_pid=pid, G=G)
                     parse_args = {'method': 'iterative-drop', 'G': G, 'curr_pid': pid, 'include_reason': include_reason}
@@ -855,7 +676,7 @@ def parse_args():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('method', type=str, choices=['global', 'global-expressive', 'local', 'sequential', 'iterative'])
-    parser.add_argument('--persona_fn', type=str, default='us_50_w_names_w_interests.json')
+    parser.add_argument('--persona_fn', type=str, default='us_50_w_names_w_interests')
     parser.add_argument('--mean_choices', type=int, default=-1)
     parser.add_argument('--include_names', action='store_true')
     parser.add_argument('--include_interests', action='store_true')
@@ -871,6 +692,9 @@ def parse_args():
     parser.add_argument('--temp', type=float, default=DEFAULT_TEMPERATURE)
     parser.add_argument('--num_iter', type=int, default=3)
     parser.add_argument('--verbose', action='store_true')
+    parser.add_argument('--network_type', type=str, default='A real life group of people who live in a small town')
+    parser.add_argument('--network_name', type=str, default='default')
+    parser.add_argument('--connection_description', type=str, default='is connected to')
     parser.add_argument('--num_processes', type=int, default=None, help='Number of parallel processes to use. Defaults to CPU count.')
     return parser.parse_args()
 
@@ -879,12 +703,15 @@ if __name__ == '__main__':
     save_prefix, demos_to_include = get_save_prefix_and_demos(args)
     print('save prefix:', save_prefix)
     
+    fn = os.path.join(PATH_TO_TEXT_FILES, args.persona_fn) + '_' + args.network_name + '.json'
     # Load personas
-    fn = os.path.join(PATH_TO_TEXT_FILES, args.persona_fn)
+    #fn = os.path.join(PATH_TO_TEXT_FILES, args.persona_fn)
+
+    print("personas fn", fn)
     with open(fn) as f:
         personas = json.load(f)
     pids = list(personas.keys())
-    print(f'Loaded {len(pids)} personas from {args.persona_fn}')
+    print(f'Loaded {len(pids)} personas from {fn}')
     
     # Set up parallel processing
     if args.num_processes is None:
@@ -894,6 +721,8 @@ if __name__ == '__main__':
     # Create pool and run parallel processes
     pool = mp.Pool(processes=args.num_processes)
     seeds = range(args.start_seed, args.start_seed + args.num_networks)
+
+    get_relationship_examples(args.network_type)
     
     # Create partial function with fixed arguments
     generate_network_partial = partial(
@@ -901,8 +730,10 @@ if __name__ == '__main__':
         args=args,
         personas=personas,
         pids=pids,
-        save_prefix=save_prefix,
-        demos_to_include=demos_to_include
+        save_prefix=save_prefix + '_' + args.network_name,
+        demos_to_include=demos_to_include,
+        network_type=args.network_type,
+        connection_description=args.connection_description
     )
     
     # Run processes in parallel and collect results

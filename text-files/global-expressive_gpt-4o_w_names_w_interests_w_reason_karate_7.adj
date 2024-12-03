@@ -1,0 +1,53 @@
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 10 --include_interests --include_reason --num_processes 10 --include_names --network_type This network describes friendships between members of a karate club at a US university. Due to a schism where the club split into two, this network has often been used to study community structure --network_name karate
+# GMT Fri Nov 29 14:51:44 2024
+# 
+13 10 42 6 15 41 21 30 22 31 44
+15 32 24 10 42 36
+22 39 46 49 38 28 20 34 25 30 37
+42 41 24 6
+30 28 46 7 32 49 34
+27 14 35 3 23
+1 26 14 9 29 19
+20 34 2 0 28 46 49 25
+10 9 36
+36 2 29 4 6
+32 37 46 34 9
+46 0
+34 48 7 28 49 25 37
+18 17 19 3
+17 2 24 12
+35 3 14
+29 24 19 14 9 4
+41 16
+9 47 38 33
+2 0 7 49 37
+33 40 14 8 26
+16 14 26 5
+21 6 43
+31 47 6 24 12
+38 37 48 0 7
+24 19 3 4
+5 8 26
+12 45 11
+45 26 3
+6
+37 48 26 28 44
+40 23 47
+11 19 44 3
+0 39
+7 48 39 28
+48 47
+43 26 8
+26
+49 28
+8 47
+44 25 19
+14 23 19
+28 25
+39 3
+23
+19
+3
+25
+4
+47

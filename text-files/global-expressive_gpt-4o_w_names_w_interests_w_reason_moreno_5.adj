@@ -1,0 +1,53 @@
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 10 --include_interests --include_reason --num_processes 10 --include_names --network_type Social links between highschool boys in a US school in the 1970s, assume all boys know each other, boys ranked eachother from -1 (conflict likely) to 3 (close friends), connections are any edge that is >0 --network_name moreno
+# GMT Fri Nov 29 16:06:12 2024
+# 
+42 30 34 49 45 13 20 10 36 25 9 4 5 48 0 12 1 32 33 37 46 15 18 38
+29 0 26 21 32 44
+6 36 27 39 20
+19 14 8 12 26
+28 4 43 9 22 25 5 37 48 40
+17 35 47 24 14
+2 8 31 12
+43 9 22 31 37 46
+3 14 21 32
+21 10 11 14 35
+31 23 40 47
+4 34 22 37 48 46 38 10 18 33 45 20 9 5 30 49 25 36 15 13
+32 10 26 44 27 39 34
+0 36 48 24 13 22 30 15 5 37 46 49 38 27 20 45 10 9 11 18
+23 7 20 46 40 16 47
+5 38 46 30 48 20 33 25 10 49 34 13 36 22 27 11
+48 22 25 37 15
+34 46 22 38 30 49 45 25 9 36 13 37
+37 27 40
+26 44 35 39
+41 8 12 14
+33 20 1 27 15 36 13 22 10 30 45
+24 10 1
+10 13 45 25 46 1 36 38 30
+44 39 35
+25 13 22 30 15 49 38 46
+18 30 15 45 13 49 22
+22 46 38 45 9 30 15 20 49
+20 45 49 27 9 36
+49 30 45 13 27
+1 27
+11 13
+13 38 30 45 15 27
+40 47 7 16
+46 30
+15 45 9 30
+12 8 47
+7 16 47
+45 30 9 38
+30
+27
+39
+36
+8
+9
+16 47
+38
+47
+14
+35

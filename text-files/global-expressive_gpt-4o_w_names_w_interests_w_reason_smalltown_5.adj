@@ -1,0 +1,53 @@
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 10 --include_interests --include_reason --num_processes 10 --include_names --network_type Real life people who live in a small town and are at least acquaintances with one another --network_name smalltown
+# GMT Fri Nov 29 16:36:03 2024
+# 
+42 17 48
+29 44 20 35 40 4
+6 22 39 0 27 45 16 2 14 18 28 33 7
+19 35 49 26 39 30
+28 12 7 13 47 0 9 45
+17 48
+2 33 43 22 18 27 16 38 0 36 9
+43 11 33 12 13 5 37 44 47 22 24 40
+3 5 10 44 35 23
+21 24 34 11 40 9 33 5 14 35
+31 47 40 16 44 5 24
+4 20
+32 10 44 35 20 46
+0 23 18 27 16 36 38 9 45 12
+23 44 35 5
+5 49 34 14 44 33
+48
+34 8 13 24 11
+37 44 47 33
+26 41 35 49
+41 25
+33 44 24 38 16 9 45 13 18 22
+24 16 8 13 47
+10 25 46
+44 35 27 11
+25 46
+18 40 22 47 27 38 16 9
+22 36 38 11 12 13 27 16
+20 1
+49 35 40 39
+1 39 30
+11
+13 14 16
+40
+46
+15 35
+12 27 38 16 45
+7 45 39
+45 27 36 38
+30
+27 16 9 39
+39
+36 16 38
+8
+9
+16
+38
+47
+14
+35

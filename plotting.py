@@ -114,13 +114,18 @@ def plot_metrics_separately(network_metrics_df, save_name=None, plot_type='defau
     if x_to_keep is None:
         x_to_keep = network_metrics_df.metric_name.unique()
     num_plots = len(x_to_keep)
-    fig, axes = plt.subplots(1, num_plots, figsize=(num_plots*3, 2.5))
-    fig.subplots_adjust(wspace=0.3)
+    fig, axes = plt.subplots(1, num_plots, figsize=(num_plots*2.5, 3))
+    fig.subplots_adjust(wspace=0.1)
+    #print("A")
     if palette is None:
         palette = get_pallete(network_metrics_df)
     for ax, x_name in zip(axes, x_to_keep):
+        #print("B")
         kept_df = network_metrics_df[network_metrics_df.metric_name == x_name]
         include_legend = x_name == x_to_keep[-1]
+        #print("C")
+        #print("ax", ax)
+        #print("kept_df", kept_df)
         if plot_type == 'default':
             ax = sns.stripplot(ax=ax, data=kept_df, x='metric_name', y='_metric_value',
                         hue='save_name', palette=palette, dodge=dodge, alpha=0.8, zorder=1, legend=include_legend)
@@ -130,6 +135,7 @@ def plot_metrics_separately(network_metrics_df, save_name=None, plot_type='defau
         else:
             sns.barplot(ax=ax, data=kept_df, x='metric_name', y='_metric_value', 
                         hue="save_name", palette=palette)
+        #print("D")
         ymin, ymax = ax.get_ylim()
         ax.set_ylim(ymin, min(ymax, 2))
         if include_legend:
@@ -138,6 +144,7 @@ def plot_metrics_separately(network_metrics_df, save_name=None, plot_type='defau
         ax.set_ylabel('')
         ax.set_xlabel('')
         ax.grid(alpha=0.2)
+        #print("E")
 
     if legend_mapper is not None:
         adapt_legend(legend, mapper=legend_mapper)
@@ -191,11 +198,9 @@ def make_plot(network_metrics_df, save_name=None, plot_type='default', plot_homo
         palette = get_pallete(network_metrics_df)
     # default is SE + data points
     if plot_type == 'default':
-        sns.stripplot(data=network_metrics_df, x=x_name, y='_metric_value',
-                      hue='save_name', palette=palette, dodge=dodge, alpha=0.8, legend=True, zorder=1)
-        sns.pointplot(data=network_metrics_df, x=x_name, y='_metric_value', errorbar='se',
-                      hue='save_name', palette='dark:black', dodge=dodge, legend=False,
-                      capsize=0.05, linestyle='none', zorder=2)  # use zorder to determine which plot ends up on top
+        sns.stripplot(data=network_metrics_df, x=x_name, y='_metric_value', hue='save_name', palette=palette, dodge=0.4, alpha=0.8, legend=True, zorder=1)
+        #sns.pointplot(data=network_metrics_df, x=x_name, y='_metric_value', errorbar='se', hue='save_name', palette='dark:black', dodge=dodge, legend=False, capsize=0.05, linestyle='none', zorder=2)  # use zorder to determine which plot ends up on top
+        sns.pointplot(data=network_metrics_df, x=x_name, y='_metric_value', errorbar='se', hue='save_name', palette='dark:black', dodge=0.7, legend=False, capsize=0.05, linestyle='none', zorder=2)  # use zorder to determine which plot ends up on top
     else:
         sns.barplot(data=network_metrics_df, x=x_name, y='_metric_value', 
                     hue="save_name", palette=palette)

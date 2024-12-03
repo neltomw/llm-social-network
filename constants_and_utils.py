@@ -29,6 +29,21 @@ with open('api-key.txt', 'r') as f:
 ##########################################
 # functions to draw and save networks
 ##########################################
+def draw_and_save_real_network_plot(G, save_prefix):
+    """
+    Draw network, save figure.
+    """
+    nx.draw_networkx(G, pos=nx.spring_layout(G, seed=0, k=2*1/np.sqrt(len(G.nodes()))))
+    plt.axis("off")  # turn off axis
+    axis = plt.gca()
+    axis.set_xlim([1.1*x for x in axis.get_xlim()])  # add padding so that node labels aren't cut off
+    axis.set_ylim([1.1*y for y in axis.get_ylim()])
+    plt.tight_layout()
+    fig_path = os.path.join(plotting.PATH_TO_SAVED_PLOTS + '/real', f'{save_prefix}.png')
+    print('Saving network drawing in ', fig_path)
+    plt.savefig(fig_path)
+    plt.close()
+
 def draw_and_save_network_plot(G, save_prefix):
     """
     Draw network, save figure.
@@ -203,9 +218,10 @@ def repeat_prompt_until_parsed(model, system_prompt, user_prompt, parse_method,
     
     num_tries = 1
     while num_tries <= max_tries:
+        print("num_tries", num_tries)
         try:
             response = get_llm_response(model, messages, temp=temp, verbose=verbose)
-            #print("response", response)
+            print("response", response)
             try:
                 parse_args['response'] = response
                 parse_out = parse_method(**parse_args)

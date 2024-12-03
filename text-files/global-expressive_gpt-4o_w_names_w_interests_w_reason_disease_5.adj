@@ -1,0 +1,53 @@
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 10 --include_interests --include_reason --num_processes 10 --include_names --network_type An epidemiologicl contact graph for the spread of covid --network_name disease
+# GMT Fri Nov 29 04:53:03 2024
+# 
+42 21 4 28 36 6 29 17 44 31
+29 31 33 4 25 9 5 8 6
+6 31 43 17 19 4
+19 31 17 12 21 43 10 4 40
+28 44 30 48 34 37 2 32
+17 36 12 21 44 43 31 41
+2 34 48 37 41
+43 21 10 31
+3
+21 36 44
+31 8 4 13
+4 12 5 40 10 33 25
+32 48 37 49 22
+0 20 23
+23
+5 33 26 47 25 12 9
+48 37 30 22 33 38 34
+34 44 25 37 49 38 7
+37
+26 12 8 47 10 9
+41 22
+33 1 25 47
+24 10 9 36
+10 40 12
+44 36 49
+25 8 7
+18 39
+22 49
+20 27 49 46 39
+49 30
+1
+11 15 12
+13
+40 12 9
+46 39
+15
+12 47 9
+7
+45 39
+30
+27 14
+39 35
+36
+8
+9 47
+16 14
+38
+47
+14
+35

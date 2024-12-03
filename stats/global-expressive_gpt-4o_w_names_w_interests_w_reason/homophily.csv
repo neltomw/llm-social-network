@@ -1,104 +1,104 @@
 graph_nr,demo,_metric_value,save_name,metric_name
-0.0,gender,1.056194221751626,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-0.0,race/ethnicity,1.0560344827586206,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-0.0,age,1.492502343017807,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-0.0,religion,0.9948116399729303,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-0.0,political affiliation,1.3275135460565926,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-0.0,gender,0.9458770396270396,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-0.0,race/ethnicity,0.9496124031007752,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-0.0,age,0.7026231013342372,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-0.0,religion,1.0025436850254368,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-0.0,political affiliation,0.6814522031913337,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-1.0,gender,0.9476165455235427,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-1.0,race/ethnicity,0.926346037507562,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-1.0,age,1.6986194007355158,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-1.0,religion,1.0132340777502067,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-1.0,political affiliation,1.2097711165330545,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-1.0,gender,1.050452654071075,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-1.0,race/ethnicity,1.0662314701482387,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-1.0,age,0.7306550631297718,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-1.0,religion,0.9935117599351174,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-1.0,political affiliation,0.7959714100064977,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-2.0,gender,1.0139789502038479,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-2.0,race/ethnicity,1.0115136360993195,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-2.0,age,1.3700793333449235,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-2.0,religion,0.9893128684947213,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-2.0,political affiliation,1.0192030644494823,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-2.0,gender,0.9865362995632809,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-2.0,race/ethnicity,0.989646652809914,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-2.0,age,0.754595477521655,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-2.0,religion,1.0052395547404225,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-2.0,political affiliation,0.9813226233051734,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-3.0,gender,1.0523674310931057,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-3.0,race/ethnicity,1.0445558470764618,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-3.0,age,1.6243650082175407,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-3.0,religion,1.0572877333045636,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-3.0,political affiliation,1.1573657500719838,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-3.0,gender,0.9495627787068004,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-3.0,race/ethnicity,0.9599342770475229,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-3.0,age,0.6506908002649977,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-3.0,religion,0.9719136781973976,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-3.0,political affiliation,0.8469421690121124,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-4.0,gender,1.0922372698105127,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-4.0,race/ethnicity,0.7931398224938164,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-4.0,age,1.6874012208737512,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-4.0,religion,0.897802347373601,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-4.0,political affiliation,1.232291055411183,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-4.0,gender,0.9111625013523748,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-4.0,race/ethnicity,1.1860138030288163,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-4.0,age,0.6027532881252883,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-4.0,religion,1.0501042019567381,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-4.0,political affiliation,0.7740679589881572,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-5.0,gender,1.0305857279066724,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-5.0,race/ethnicity,0.8899166989538938,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-5.0,age,1.2770763349936292,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-5.0,religion,0.9563108149552513,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-5.0,political affiliation,1.287530694248084,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-5.0,gender,0.9705416306539901,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-5.0,race/ethnicity,1.0989896350492117,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-5.0,age,0.7548585172207564,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-5.0,religion,1.0214193936411602,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-5.0,political affiliation,0.7203405163835062,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-6.0,gender,1.0919301164725457,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-6.0,race/ethnicity,0.7543103448275862,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-6.0,age,1.8041237113402062,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-6.0,religion,0.8839950372208436,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-6.0,political affiliation,1.0865066225165563,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-6.0,gender,0.9114583333333334,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-6.0,race/ethnicity,1.2209302325581397,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-6.0,age,0.6794794633158158,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-6.0,religion,1.0568734793187347,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-6.0,political affiliation,0.9158615136876007,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-7.0,gender,1.1068748553734946,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-7.0,race/ethnicity,0.8951815482986983,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-7.0,age,1.5890626066771352,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-7.0,religion,1.1273067884902963,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-7.0,political affiliation,1.437162843734924,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-7.0,gender,0.8970644421803362,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-7.0,race/ethnicity,1.0942553519174494,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-7.0,age,0.6640404214410025,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-7.0,religion,0.9375856012632732,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-7.0,political affiliation,0.5748045771080611,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-8.0,gender,1.2970806232037513,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-8.0,race/ethnicity,0.890210886292391,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-8.0,age,1.3916105762403794,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-8.0,religion,0.8792527120972868,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-8.0,political affiliation,1.156545892397789,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-8.0,gender,0.7138694638694639,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-8.0,race/ethnicity,1.0987250944967646,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-8.0,age,0.6610405589776824,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-8.0,religion,1.059198487864712,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-8.0,political affiliation,0.8477395829174486,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-9.0,gender,1.1420091809159676,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-9.0,race/ethnicity,0.9436903888481291,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-9.0,age,1.522629231556628,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-9.0,religion,1.2072576245534379,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-9.0,political affiliation,1.1938729979803673,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
-9.0,gender,0.8632251318421532,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-9.0,race/ethnicity,1.0506349991753259,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-9.0,age,0.7295005352308052,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-9.0,religion,0.8983882935583509,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
-9.0,political affiliation,0.8114343143637007,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+0.0,gender,1.019134775374376,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+0.0,race/ethnicity,0.9467895362663495,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+0.0,age,1.7419125488801992,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+0.0,religion,1.205399161461453,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+0.0,political affiliation,1.3637531399862983,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+0.0,gender,0.9815705128205128,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+0.0,race/ethnicity,1.0478481689387864,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+0.0,age,0.6238047559702724,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+0.0,religion,0.8992994378723046,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+0.0,political affiliation,0.6462046754400578,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+1.0,gender,1.2507563152321888,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+1.0,race/ethnicity,0.9840321316614419,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+1.0,age,1.7699547016557327,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+1.0,religion,1.2435145499661628,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+1.0,political affiliation,1.2675910596026492,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+1.0,gender,0.7584863053613053,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+1.0,race/ethnicity,1.0143587033121917,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+1.0,age,0.6359245845021366,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+1.0,religion,0.8806126963061269,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+1.0,political affiliation,0.7397342995169083,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+2.0,gender,1.2170962065622044,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+2.0,race/ethnicity,0.9420739270652443,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+2.0,age,1.6959628173749661,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+2.0,religion,0.8966028170019815,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+2.0,political affiliation,1.2840059078564963,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+2.0,gender,0.7909057369489024,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+2.0,race/ethnicity,1.0520885617087725,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+2.0,age,0.5948436987470005,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+2.0,religion,1.0506922928810234,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+2.0,political affiliation,0.7237688110381261,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+3.0,gender,1.0247653542438477,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+3.0,race/ethnicity,0.9451800342922462,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+3.0,age,1.744318505439426,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+3.0,religion,0.9404603594587554,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+3.0,political affiliation,1.1093172587903848,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+3.0,gender,0.9761474713132172,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+3.0,race/ethnicity,1.0492954730395307,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+3.0,age,0.5891485555408309,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+3.0,religion,1.0291903590488096,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+3.0,political affiliation,0.8936753231732815,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+4.0,gender,1.0761050423207696,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+4.0,race/ethnicity,1.010119940029985,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+4.0,age,1.6733901090691767,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+4.0,religion,0.8496062142625956,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+4.0,political affiliation,1.0455657932623093,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+4.0,gender,0.9267001114827201,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+4.0,race/ethnicity,0.9908998988877654,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+4.0,age,0.6096159958539857,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+4.0,religion,1.073733206389506,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+4.0,political affiliation,0.9556815795001051,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+5.0,gender,1.0928071687749334,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+5.0,race/ethnicity,0.8779081844619858,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+5.0,age,1.445472612097876,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+5.0,religion,0.8240156656402283,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+5.0,political affiliation,1.1729035346684753,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+5.0,gender,0.910613608279271,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+5.0,race/ethnicity,1.1097879891659663,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+5.0,age,0.684199467786887,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+5.0,religion,1.0862794242664087,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+5.0,political affiliation,0.8318297343965234,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+6.0,gender,1.110043511205893,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+6.0,race/ethnicity,1.0114133074307916,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+6.0,age,1.5810786828646564,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+6.0,religion,0.9133377602255385,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+6.0,political affiliation,1.0378773746230139,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+6.0,gender,0.8940125797520164,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+6.0,race/ethnicity,0.9897368708374277,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+6.0,age,0.7191288813097407,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+6.0,religion,1.042487691762905,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+6.0,political affiliation,0.9631595261315613,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+7.0,gender,1.1097245331854315,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+7.0,race/ethnicity,0.9152298850574713,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+7.0,age,1.7306223749522718,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+7.0,religion,1.047008547008547,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+7.0,political affiliation,1.0816777041942605,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+7.0,gender,0.8943198005698005,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+7.0,race/ethnicity,1.0762273901808785,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+7.0,age,0.6421730294341198,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+7.0,religion,0.9769532306028655,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+7.0,political affiliation,0.9205582393988192,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+8.0,gender,1.1002023143246105,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+8.0,race/ethnicity,0.9000293887147335,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+8.0,age,1.3394251796313652,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+8.0,religion,1.001720054139409,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+8.0,political affiliation,1.1869261739915713,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+8.0,gender,0.9034910402097902,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+8.0,race/ethnicity,1.0898960535588442,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+8.0,age,0.7814188981800032,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+8.0,religion,0.999156713116567,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+8.0,political affiliation,0.8181909676474894,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+9.0,gender,1.1850404364818328,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+9.0,race/ethnicity,0.9168671478214381,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+9.0,age,1.7621673459602016,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+9.0,religion,1.154615576971166,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+9.0,political affiliation,1.1634324143949897,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
+9.0,gender,0.8217799642218248,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+9.0,race/ethnicity,1.0747551228892496,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+9.0,age,0.7003394957837842,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+9.0,religion,0.9241969859861559,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
+9.0,political affiliation,0.8410415808460971,global-expressive_gpt-4o_w_names_w_interests_w_reason,cross_ratio
 10.0,gender,1.1625685585752144,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
 10.0,race/ethnicity,0.9543422733077905,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio
 10.0,age,1.8709431080565102,global-expressive_gpt-4o_w_names_w_interests_w_reason,same_ratio

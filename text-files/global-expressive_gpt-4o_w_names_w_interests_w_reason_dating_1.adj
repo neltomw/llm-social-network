@@ -1,0 +1,53 @@
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 10 --include_interests --include_reason --num_processes 10 --include_names --network_type Members of a high school dating network in 1950, where a connection means the two people have dated, heterosexual relationships within the same race and religion only (these were dangerous in the 1950s) --network_name dating --connection_description has dated
+# GMT Sat Nov 30 02:42:44 2024
+# 
+27 2
+35 18 42
+40 5 31 38 0 23 39
+38 5 0 43 31
+2
+3 42 21 10 17
+48 39 5 47
+29 46 45 13 36
+46 8 19 11
+31 25 49 14
+32 9 12
+39 26 5
+21 37
+36 6 13
+19 28
+42 37 33
+49 25 43 14
+26 34 5
+22 4
+13 45
+41 12 17
+17 24
+45 4 18
+24 20 9
+23 1 0 43
+4
+33 14 37
+14
+30 34 16 15
+10 37
+28
+44 7 11
+34 0 15
+18 8
+20 6 9 12
+25 15
+6 9
+7 47
+47
+1 0 43
+16
+0 5
+15
+5
+11
+9
+8
+12
+43
+37
