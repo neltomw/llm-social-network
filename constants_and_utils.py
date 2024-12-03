@@ -154,6 +154,9 @@ def get_llm_response(model, messages, savename=None, temp=DEFAULT_TEMPERATURE, v
                 messages=messages,
                 temperature=temp)
     
+    print("response", response)
+    raw_response = response
+    
     if savename is not None:
         # read json in savename
         # if file exists
@@ -185,7 +188,7 @@ def get_llm_response(model, messages, savename=None, temp=DEFAULT_TEMPERATURE, v
             print()
         print('\nRESPONSE')
         print(response.message.content)
-    return response.message.content
+    return response.message.content, raw_response
         
 
 def repeat_prompt_until_parsed(model, system_prompt, user_prompt, parse_method,
@@ -204,11 +207,11 @@ def repeat_prompt_until_parsed(model, system_prompt, user_prompt, parse_method,
     num_tries = 1
     while num_tries <= max_tries:
         try:
-            response = get_llm_response(model, messages, temp=temp, verbose=verbose)
+            response, raw_response = get_llm_response(model, messages, temp=temp, verbose=verbose)
             try:
                 parse_args['response'] = response
-                parse_out = parse_method(**parse_args)
-                return parse_out, response, num_tries
+                parse_out, new_actions = parse_method(**parse_args)
+                return parse_out, response, num_tries, raw_response, new_actions
             except Exception as e:
                 print('Failed to parse response:', e)
                 for m in messages:
@@ -230,11 +233,13 @@ def compute_token_cost(savepath, nr_networks, model='gpt-3.5-turbo'):
 
     prompt_tokens = []
     completion_tokens = []
+    cache_tokens = []
     for i in range(nr_networks):
         with open(f'{savepath}-{i}.json') as f:
             data = json.load(f)
             prompt_tokens.append(data['prompt_tokens'])
             completion_tokens.append(data['completion_tokens'])
+            cache_tokens.append(data['prompt_tokens_details']['cache_tokens'])
 
     # print averages and std
     print(f'Files in {savepath}: {nr_networks}')
@@ -253,9 +258,11 @@ def compute_token_cost(savepath, nr_networks, model='gpt-3.5-turbo'):
 
 if __name__ == '__main__':
 
-    compute_token_cost('costs/cost_all-at-once-for_us_50-gpt-3.5-turbo', 15)
-    compute_token_cost('costs/cost_llm-as-agent-for_us_50-gpt-3.5-turbo', 15)
-    compute_token_cost('costs/cost_one-by-one-for_us_50-gpt-3.5-turbo', 15)
+    #compute_token_cost('costs/cost_all-at-once-for_us_50-gpt-3.5-turbo', 15)
+    #compute_token_cost('costs/cost_llm-as-agent-for_us_50-gpt-3.5-turbo', 15)
+    #compute_token_cost('costs/cost_one-by-one-for_us_50-gpt-3.5-turbo', 15)
+
+    compute_token_cost('costs/cost_one-by-one-for_us_50-gpt-4o', 1)
 
     combine_plots(['plots/all-at-once-for_us_50-gpt-3.5-turbo', 'plots/llm-as-agent-for_us_50-gpt-3.5-turbo', 'plots/one-by-one-for_us_50-gpt-3.5-turbo', 'plots/real'],
                   ['betweenness_centrality_hist.png', 'degree_centrality_hist.png', 'closeness_centrality_hist.png'])

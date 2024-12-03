@@ -44,17 +44,17 @@ def get_system_prompt(method, personas, demos_to_include, curr_pid=None, G=None,
         prompt_personal = assign_persona_to_model(personas[curr_pid], demos_to_include) + '.'
     
     if method == 'global':
-        prompt = 'Your task is to create a realistic social network. You will be provided a list of people in the network, ' + persona_format + '. Provide a list of friendship pairs in the format ID, ID with each pair separated by a newline. ' + prompt_extra
+        prompt = 'Your task is to create a realistic social network. You will be provided a list of people in the network, ' + persona_format + '. Provide a list of friendship pairs in the format ID, ID with each pair separated by a newline. Don\'t be influenced by the ordering of the provided users when choosing your connections. ' + prompt_extra
     
     elif method in {'local', 'sequential'}:
-        prompt = prompt_personal + ' You are joining a social network.\n\nYou will be provided a list of people in the network, ' + persona_format
+        prompt = 'You are joining a social network.\n\nYou will be provided a list of people in the network, ' + persona_format
         if method == 'sequential':
-            prompt += ', followed by '
-            if only_degree:
-                prompt += 'their current number of friends'
-            else:
-                prompt += 'their current friends\' IDs'
-        prompt += '.\n\nWhich of these people will you become friends with? '
+            prompt += ', followed by a list of connections that have already been made within the network.'
+            #if only_degree:
+            #    prompt += 'their current number of friends'
+            #else:
+            #    prompt += 'their current friends\' IDs'
+        prompt += '.\n\nWhich of these people will you become friends with? You must choose at least one.'
         if num_choices is not None:
             pp = 'people' if num_choices > 1 else 'person'
             prompt += f'Choose {num_choices} {pp}. '
@@ -63,6 +63,7 @@ def get_system_prompt(method, personas, demos_to_include, curr_pid=None, G=None,
         else:
             prompt += 'Provide a list of *YOUR* friends in the format ID, ID, ID, etc. ' 
         prompt += prompt_extra
+        #prompt += '\n\n' + prompt_personal
     
     elif method == 'iterative-add':
         prompt = prompt_personal + ' You are part of a social network and you want to make a new friend.\n\nYou will be provided a list of potential new friends, ' + persona_format + ', followed by their total number of friends and number of mutual friends with you. '
@@ -86,12 +87,15 @@ def get_system_prompt(method, personas, demos_to_include, curr_pid=None, G=None,
 
 
 def get_user_prompt(method, personas, order, demos_to_include, curr_pid=None, 
-                    G=None, only_degree=True):
+                    G=None, only_degree=True, log_of_actions=[]):
     """
     Get content for user message.
     """
     assert method in {'global', 'local', 'sequential', 'iterative-add', 'iterative-drop'}        
     lines = []
+    
+    prompt_personal = 'Your identity will follow, use it when choosing your friends. You are user ' + curr_pid + '. ' + assign_persona_to_model(personas[curr_pid], demos_to_include) + '.'
+
     if method == 'global':
         for pid in order:
             lines.append(convert_persona_to_string(personas[pid], demos_to_include, pid=pid))
@@ -99,26 +103,47 @@ def get_user_prompt(method, personas, order, demos_to_include, curr_pid=None,
     elif method == 'local':
         assert curr_pid is not None 
         for pid in order:
-            if pid != curr_pid:
-                lines.append(convert_persona_to_string(personas[pid], demos_to_include, pid=pid))
-        assert len(lines) == (len(order)-1)
+            #if pid != curr_pid:
+            lines.append(convert_persona_to_string(personas[pid], demos_to_include, pid=pid))
+        assert len(lines) == (len(order))
+        lines.append(prompt_personal)
     
     elif method == 'sequential':
         assert curr_pid is not None 
         assert G is not None
         for pid in order:
-            if pid != curr_pid:
-                persona = convert_persona_to_string(personas[pid], demos_to_include, pid=pid)
-                cand_friends = set(G.neighbors(pid))  # candidate's friends
-                if only_degree:
-                    persona += f'; has {len(cand_friends)} friends'
-                else:
-                    if len(cand_friends) == 0:
-                        persona += '; no friends yet'
-                    else:
-                        persona += '; friends with IDs ' + ', '.join(cand_friends)
-                lines.append(persona)
-        assert len(lines) == (len(order)-1)
+            #if pid != curr_pid:
+            persona = convert_persona_to_string(personas[pid], demos_to_include, pid=pid)
+            #cand_friends = set(G.neighbors(pid))  # candidate's friends
+            #if only_degree:
+            #    persona += f'; has {len(cand_friends)} friends'
+            #else:
+            #    if len(cand_friends) == 0:
+            #       persona += '; no friends yet'
+            #    else:
+            #        persona += '; friends with IDs ' + ', '.join(cand_friends)
+            lines.append(persona)
+        assert len(lines) == (len(order))
+        #for pid in order:
+            #if pid != curr_pid:
+        #    persona = ''
+        #    cand_friends = set(G.neighbors(pid))  # candidate's friends
+        #    if only_degree:
+        #        persona += f'{pid} has {len(cand_friends)} friends'
+        #    else:
+        #        if len(cand_friends) == 0:
+        #            persona += f'{pid} has no friends yet'
+        #        else:
+        #            persona += f'{pid} is friends with IDs ' + ', '.join(cand_friends)
+
+        lines.append("Log of previous actions:")
+        lines += log_of_actions
+
+        #lines.append(persona)
+
+        lines.append(prompt_personal)
+        #assert len(lines) == (len(order)-1)
+        #assert len(lines) == 2 * (len(order))
         
     else:  # iterative
         assert curr_pid is not None 
@@ -152,6 +177,8 @@ def update_graph_from_response(method, response, G, curr_pid=None, include_reaso
     - 'iterative-add' should list one new edge to add for curr_pid
     - 'iterative-drop' should list one existing edge to drop for curr_pid
     """
+
+    new_actions = []
     assert method in {'global', 'local', 'sequential', 'iterative-add', 'iterative-drop'}
     if num_choices is not None:
         assert method in {'local', 'sequential'}
@@ -169,22 +196,31 @@ def update_graph_from_response(method, response, G, curr_pid=None, include_reaso
     elif method == 'local' or method == 'sequential':
         assert curr_pid is not None, f'{method} method needs curr_pid to parse response'
         new_edges = []
+        new_friends = []
         if include_reason:
             for line in lines:
                 pid, reason = line.strip('.').split(',', 1)
                 new_edges.append((curr_pid, pid.strip()))
                 reasons[pid] = reason.strip()
+                new_friends.append(pid.strip())
         else:
             assert len(lines) == 1, f'Response should not be more than one line'
             line = lines[0].replace(',', ' ').replace('.', ' ')
             ids = line.split()
             for pid in ids:
                 assert pid.isnumeric(), f'Response should contain ONLY the ID(s)'
-                new_edges.append((curr_pid, pid.strip()))
+                if curr_pid != pid.strip():
+                    new_edges.append((curr_pid, pid.strip()))
+                    new_friends.append(pid.strip())
         if num_choices is not None:
             pp = 'people' if num_choices > 1 else 'person'
             assert len(new_edges) == num_choices, f'Choose {num_choices} {pp}'
+        new_actions.append(f'{curr_pid} became friends with '+ ','.join(new_friends))
+        #new_actions.append(f'{curr_pid} gained '+ str(len(new_friends)) + ' friends')
+        #for new_friend in new_friends:
+        #    new_actions.append(f'{new_friend} gained 1 friend')
         edges_found.extend(new_edges)
+        assert len(new_edges) > 0, f'You must choose at least one person to befriend'
     
     else:  # iterative-add or iterative-drop
         assert curr_pid is not None, f'{method} method needs curr_pid to parse response'
@@ -222,8 +258,8 @@ def update_graph_from_response(method, response, G, curr_pid=None, include_reaso
     else:
         G.add_edges_from(edges_found)
     if include_reason:
-        return G, reasons 
-    return G
+        return G, reasons, new_actions 
+    return G, new_actions
     
     
 def generate_network(method, demos_to_include, personas, order, model, mean_choices=None, include_reason=False, 
@@ -238,19 +274,24 @@ def generate_network(method, demos_to_include, personas, order, model, mean_choi
     total_num_tries = 0
     total_input_toks = 0
     total_output_toks = 0
+    total_cached_toks = 0
+
+    log_of_actions = []
     
     if method == 'global':
         system_prompt = get_system_prompt(method, personas, demos_to_include, all_demos=all_demos)
         user_prompt = get_user_prompt(method, personas, order, demos_to_include)
         parse_args = {'method': method, 'G': G}
-        G, response, num_tries = repeat_prompt_until_parsed(model, system_prompt, user_prompt, update_graph_from_response,
+        G, response, num_tries, _, _ = repeat_prompt_until_parsed(model, system_prompt, user_prompt, update_graph_from_response,
                                                             parse_args, temp=temp, verbose=verbose)
         total_num_tries += num_tries
         total_input_toks += len(system_prompt.split()) + len(user_prompt.split())
         total_output_toks += len(response.split())
     
     elif method == 'local' or method == 'sequential':
-        order2 = np.random.choice(order, size=len(order), replace=False)  # order of adding nodes
+        #order2 = np.random.choice(order, size=len(order), replace=False)  # order of adding nodes
+        order2 = order
+        
         print('Order of assigning:', order2[:10])
         for node_num, pid in enumerate(order2):
             if mean_choices is None:
@@ -260,22 +301,32 @@ def generate_network(method, demos_to_include, personas, order, model, mean_choi
             if node_num < 3:  # for first three nodes, use local
                 system_prompt = get_system_prompt('local', personas, demos_to_include, curr_pid=pid,
                                     num_choices=num_choices, include_reason=include_reason, all_demos=all_demos)
-                user_prompt = get_user_prompt('local', personas, order, demos_to_include, curr_pid=pid)
+                user_prompt = get_user_prompt('local', personas, order, demos_to_include, curr_pid=pid, log_of_actions=log_of_actions)
             else:  # otherwise, allow local or sequential
                 system_prompt = get_system_prompt(method, personas, demos_to_include, curr_pid=pid, 
                     num_choices=num_choices, include_reason=include_reason, all_demos=all_demos, only_degree=only_degree)
                 user_prompt = get_user_prompt(method, personas, order, demos_to_include, curr_pid=pid,
-                                               G=G, only_degree=only_degree)
+                                               G=G, only_degree=only_degree, log_of_actions=log_of_actions)
             parse_args = {'method': method, 'G': G, 'curr_pid': pid, 'num_choices': num_choices, 'include_reason': include_reason}
-            G, response, num_tries = repeat_prompt_until_parsed(model, system_prompt, user_prompt, 
+
+            print("system_prompt", system_prompt, "user_prompt", user_prompt)
+            G, response, num_tries, raw_response, new_actions = repeat_prompt_until_parsed(model, system_prompt, user_prompt, 
                     update_graph_from_response, parse_args, temp=temp, verbose=verbose)
+            print("generate_network raw_response", raw_response)
+            print("new_actions", new_actions)
             if include_reason:
                 G, pid_reasons = G 
                 print(pid, pid_reasons)
                 reasons[pid] = pid_reasons
             total_num_tries += num_tries
-            total_input_toks += len(system_prompt.split()) + len(user_prompt.split())
-            total_output_toks += len(response.split())
+            #total_input_toks += len(system_prompt.split()) + len(user_prompt.split())
+            #total_output_toks += len(response.split())
+            print("usage", raw_response.usage)
+            print("raw_response.usage.prompt_tokens_details", raw_response.usage.prompt_tokens_details)
+            total_input_toks += raw_response.usage.prompt_tokens
+            total_output_toks += raw_response.usage.total_tokens - raw_response.usage.prompt_tokens
+            total_cached_toks += raw_response.usage.prompt_tokens_details.cached_tokens
+            log_of_actions += new_actions
             
     else:  # iterative
         # construct local network first 
@@ -289,7 +340,7 @@ def generate_network(method, demos_to_include, personas, order, model, mean_choi
                                 num_choices=num_choices, include_reason=include_reason, all_demos=all_demos)
             user_prompt = get_user_prompt('local', personas, order, demos_to_include, curr_pid=pid)
             parse_args = {'method': 'local', 'G': G, 'curr_pid': pid, 'num_choices': num_choices, 'include_reason': include_reason}
-            G, response, num_tries = repeat_prompt_until_parsed(model, system_prompt, user_prompt, 
+            G, response, num_tries, _, _ = repeat_prompt_until_parsed(model, system_prompt, user_prompt, 
                     update_graph_from_response, parse_args, temp=temp, verbose=verbose)
             if include_reason:
                 G, pid_reasons = G 
@@ -308,7 +359,7 @@ def generate_network(method, demos_to_include, personas, order, model, mean_choi
                 user_prompt = get_user_prompt('iterative-add', personas, None, demos_to_include, 
                                               curr_pid=pid, G=G)
                 parse_args = {'method': 'iterative-add', 'G': G, 'curr_pid': pid, 'include_reason': include_reason}
-                G, response_add, num_tries = repeat_prompt_until_parsed(model, system_prompt, user_prompt, 
+                G, response_add, num_tries, _, _ = repeat_prompt_until_parsed(model, system_prompt, user_prompt, 
                         update_graph_from_response, parse_args, temp=temp, verbose=verbose)
                 if include_reason:
                     G, pid_reasons = G 
@@ -324,7 +375,7 @@ def generate_network(method, demos_to_include, personas, order, model, mean_choi
                     user_prompt = get_user_prompt('iterative-drop', personas, None, demos_to_include, 
                                                   curr_pid=pid, G=G)
                     parse_args = {'method': 'iterative-drop', 'G': G, 'curr_pid': pid, 'include_reason': include_reason}
-                    G, response_drop, num_tries = repeat_prompt_until_parsed(model, system_prompt, user_prompt, 
+                    G, response_drop, num_tries, _, _ = repeat_prompt_until_parsed(model, system_prompt, user_prompt, 
                             update_graph_from_response, parse_args, temp=temp, verbose=verbose)
                     if include_reason:
                         G, pid_reasons = G 
@@ -337,9 +388,8 @@ def generate_network(method, demos_to_include, personas, order, model, mean_choi
                     G.remove_edge(pid, friends[0])
                 print(pid, response_add, response_drop)
                 
-    return G, reasons, total_num_tries, total_input_toks, total_output_toks
+    return G, reasons, total_num_tries, total_input_toks, total_output_toks, total_cached_toks
    
-
 def parse_args():
     """
     Parse command line arguments.
@@ -422,7 +472,7 @@ if __name__ == '__main__':
         np.random.seed(seed)
         order = np.random.choice(pids, size=len(pids), replace=False)  # order of printing personas
         print('Order of printing:', order[:10])
-        G, reasons, num_tries, input_toks, output_toks = generate_network(
+        G, reasons, num_tries, input_toks, output_toks, cached_toks = generate_network(
             args.method, demos_to_include, personas, order, args.model, 
             mean_choices=args.mean_choices if args.mean_choices > 0 else None,
             include_reason=args.include_reason, all_demos=args.prompt_all, 
@@ -431,15 +481,15 @@ if __name__ == '__main__':
         save_network(G, f'{save_prefix}_{seed}')
         draw_and_save_network_plot(G, f'{save_prefix}_{seed}')
         duration = time.time()-ts
-        print(f'Seed {seed}: {len(G.edges())} edges, num tries={num_tries}, input toks={input_toks}, output toks={output_toks} [time={duration:.2f}s]')
+        print(f'Seed {seed}: {len(G.edges())} edges, num tries={num_tries}, input toks={input_toks}, output toks={output_toks}, cached toks={cached_toks} [time={duration:.2f}s]')
         stats.append({'seed': seed, 'duration': duration, 'num_tries': num_tries, 
-                      'num_input_toks': input_toks, 'num_output_toks': output_toks})
+                      'num_input_toks': input_toks, 'num_output_toks': output_toks, 'num_cached_toks': cached_toks})
         if args.include_reason:
             fn = os.path.join(PATH_TO_TEXT_FILES, f'{save_prefix}_{seed}_reasons.json')
             with open(fn, 'w') as f:
                 json.dump(reasons, f)
     
-    stats_df = pd.DataFrame(stats, columns=['seed', 'duration', 'num_tries', 'num_input_toks', 'num_output_toks'])
+    stats_df = pd.DataFrame(stats, columns=['seed', 'duration', 'num_tries', 'num_input_toks', 'num_output_toks', 'num_cached_toks'])
     save_dir = os.path.join(PATH_TO_STATS_FILES, save_prefix)
     if not os.path.exists(save_dir):
         print('Making directory:', save_dir)

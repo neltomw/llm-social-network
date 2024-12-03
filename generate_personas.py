@@ -244,7 +244,7 @@ def generate_names(personas, demos, model, verbose=False):
         for demo in demos:
             prompt += f'{demo}: {personas[nr][demo]}\n'
         prompt += 'Answer by providing ONLY their first and last name, in the format "FIRSTNAME LASTNAME".'
-        name, _, _ = repeat_prompt_until_parsed(model, None, prompt, parse_name_response, {}, max_tries=3,
+        name, _, _, _, _ = repeat_prompt_until_parsed(model, None, prompt, parse_name_response, {}, max_tries=3,
                                                 temp=NAMES_TEMPERATURE,  verbose=verbose)
         personas[nr]['name'] = name
         print(convert_persona_to_string(personas[nr], demos, pid=nr), personas[nr]['name'])
@@ -269,7 +269,7 @@ def generate_interests(personas, demos, model, verbose=False):
             demo = demos[idx]
             prompt += f'{demo}: {personas[nr][demo]}\n'
         prompt += 'Answer by providing ONLY their interests. Do not include filler like "She enjoys" or "He has a keen interest in".'
-        interests, _, _ = repeat_prompt_until_parsed(model, None, prompt, parse_interest_response, {}, max_tries=3,
+        interests, _, _, _, _ = repeat_prompt_until_parsed(model, None, prompt, parse_interest_response, {}, max_tries=3,
                                                      temp=NAMES_TEMPERATURE, verbose=verbose)
         personas[nr]['interests'] = interests
         print(convert_persona_to_string(personas[nr], demos + ['interests'], pid=nr))
@@ -282,7 +282,7 @@ def parse_interest_response(response):
         raise Exception('Do not include filler. Provide ONLY their interest as one phrase.')
     if len(toks) > 100:
         raise Exception('Interests are too long')
-    return response
+    return response, None
 
 def get_interest_embeddings(persona_fn, model='text-embedding-3-small'):
     """
@@ -434,7 +434,7 @@ def parse_reason(model, reason, demos_to_include, verbose=False):
     if verbose:
         print(system)
     try:
-        parse_out, _, _ = repeat_prompt_until_parsed(model, system, reason, parse_classification,
+        parse_out, _, _, _, _ = repeat_prompt_until_parsed(model, system, reason, parse_classification,
                                         {'demos_to_include': demos_to_include}, max_tries=3, temp=DEFAULT_TEMPERATURE, verbose=False)
         return parse_out
     except:
