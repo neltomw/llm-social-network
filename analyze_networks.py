@@ -210,7 +210,8 @@ def summarize_network_metrics(list_of_G, personas, demo_keys, save_name, demos=T
             if metric_name in ['radius', 'diameter', 'avg_shortest_path']:
                 # use LCC for connectivity measures
                 largest_cc = sorted(nx.connected_components(G.to_undirected()), key=len, reverse=True)[0]
-                _metric_value = f(G.subgraph(largest_cc).to_undirected()) / np.log(len(largest_cc))
+                print("largest_cc", largest_cc)
+                _metric_value = f(G.subgraph(largest_cc).to_undirected()) / max(1, np.log(len(largest_cc)))
             elif metric_name == 'modularity':
                 comms = nx.community.louvain_communities(G.to_undirected())  # get communities with Louvain
                 _metric_value = f(G.to_undirected(), comms)

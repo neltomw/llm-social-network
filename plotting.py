@@ -14,6 +14,12 @@ plt.rcParams['figure.figsize'] = [12, 6]
 PATH_TO_SAVED_PLOTS = './plots'  # folder holding plots, eg, network figures
 GRAPH_TYPES = ['real', 'global', 'local', 'sequential'] #  'iterative']
 
+PATH_TO_FOLDER = '.'
+PATH_TO_TEXT_FILES = PATH_TO_FOLDER + '/text-files'  # folder holding text files, typically GPT output
+PATH_TO_STATS_FILES = PATH_TO_FOLDER + '/stats'  # folder holding stats files, eg, proportion of nodes in giant component
+DEFAULT_TEMPERATURE = 0.8
+SHOW_PLOTS = False
+
 def parse_save_name(save_name):
     elements = save_name.split('_', 2)
     if len(elements) == 2:

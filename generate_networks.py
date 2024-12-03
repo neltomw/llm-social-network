@@ -25,11 +25,11 @@ def get_system_prompt(method, personas, demos_to_include, curr_pid=None, G=None,
     """
     Get content for system message.
     """
-    assert method in {'global', 'local', 'sequential', 'iterative-add', 'iterative-drop'}
+    assert method in {'global', 'global-expressive', 'local', 'sequential', 'iterative-add', 'iterative-drop'}
     if G is not None:
         assert 'iterative' in method 
     if (curr_pid is not None) or include_reason:
-        assert method != 'global'
+        assert method != 'global' or method != 'global-expressive'
     if num_choices is not None:
         assert method in {'local', 'sequential'}
         assert num_choices >= 1
@@ -45,6 +45,80 @@ def get_system_prompt(method, personas, demos_to_include, curr_pid=None, G=None,
     
     if method == 'global':
         prompt = 'Your task is to create a realistic social network. You will be provided a list of people in the network, ' + persona_format + '. Provide a list of friendship pairs in the format ID, ID with each pair separated by a newline. ' + prompt_extra
+
+    elif method == 'global-expressive':
+        if include_reason:
+            prompt = """
+Your task is to create a realistic social network. You will be provided a list of people in the network, {persona_format}.
+For each and every user in the list, you will output text matching this format, but for that specific user, with their specific preferences accounted for: 
+"-----------------------
+User ID
+You are a GENDER, age AGE, RACE, RELIGION, POLITICS, interests include: INTEREST, INTEREST, INTEREST, INTEREST, .... You are joining a social network. You are choosing your friends! Please choose from the list provided at the top.
+You are friends with the users ID1, ID2, ID3, ID4, ID5"
+You are friends with user ID1 because REASON
+You are friends with user ID2 because REASON
+You are friends with user ID3 because REASON
+You are friends with user ID4 because REASON
+You are friends with user ID5 because REASON"
+Then you will output a new line and move on to the next user, until you have completed this task for all the users in the list.
+
+Your output will end up looking something like this:
+
+-----------------------
+User 1  
+You are a Man, age 47, White, Protestant, Republican, interests include: Hunting, fishing, classic rock, church activities, patriotic events, home improvement. You are joining a social network. You are choosing your friends! Please choose from the list provided at the top. 
+You are friends with the users 19, 21, 45, 3, 6
+You are friends with user 19 because they sound nice and share my interests.
+You are friends with user 21 because they are around my age.
+You are friends with user 45 because they share my interest in music and politics.
+You are friends with user 3 because you think you would get along with them.
+You are friends with user 6 because they are around my age and seem patriotic.
+-----------------------
+User 12  
+You are a Man, age 34, White, Protestant, Republican, interests include: Finance, fitness, outdoor activities, history, technology, conservative politics. You are joining a social network. You are choosing your friends! Please choose from the list provided at the top.
+You are friends with the users 33, 42, 1, 8, 41, 22, 4
+You are friends with user 33 because they share my interest in outdoor activities.
+You are friends with user 42 because they are knowledgeable about finance and technology.
+You are friends with user 1 because they seem to have a strong sense of patriotism.
+You are friends with user 8 because they are around my age.
+You are friends with user 41 because they seem like the kind of guy you would like.
+You are friends with user 22 because you think you would get along with them.
+You are friends with user 4 because they are around my age and seem technologically savvy.
+-----------------------
+User 37  
+You are a Woman, age 58, Asian, Catholic, Democrat, interests include: Volunteering, social justice, culinary arts, family activities, church community involvement. You are joining a social network. You are choosing your friends! Please choose from the list provided at the top.
+You are friends with the users 7, 11, 8, 40, 32
+You are friends with user 7 because they are involved in social justice work.
+You are friends with user 11 because they share my interest in family activities.
+You are friends with user 8 because they are passionate about church community involvement.
+You are friends with user 40 because they have a shared love for culinary arts.
+You are friends with user 32 because they are active in volunteering and community service.
+..."""
+        else:
+            prompt = """
+Your task is to create a realistic social network. You will be provided a list of people in the network, {persona_format}.
+For each and every user in the list, you will output text matching this format, but for that specific user, with their specific preferences accounted for: 
+"-----------------------
+User ID
+You are a GENDER, age AGE, RACE, RELIGION, POLITICS, interests include: INTEREST, INTEREST, INTEREST, INTEREST, .... You are joining a social network. You are choosing your friends! Please choose from the list provided at the top.
+You are friends with the users ID1, ID2, ID3, ID4, ID5"
+Then you will output a new line and move on to the next user, until you have completed this task for all the users in the list.
+
+Your output will end up looking something like this:
+-----------------------
+User 1  
+You are a Man, age 47, White, Protestant, Republican, interests include: Hunting, fishing, classic rock, church activities, patriotic events, home improvement. You are joining a social network. You are choosing your friends! Please choose from the list provided at the top.
+You are friends with the users 19, 21, 45, 3, 6
+-----------------------
+User 12  
+You are a Man, age 34, White, Protestant, Republican, interests include: Finance, fitness, outdoor activities, history, technology, conservative politics. You are joining a social network. You are choosing your friends! Please choose from the list provided at the top.
+You are friends with the users 33, 42, 1, 8, 41, 22, 4
+-----------------------
+User 37  
+You are a Woman, age 58, Asian, Catholic, Democrat, interests include: Volunteering, social justice, culinary arts, family activities, church community involvement. You are joining a social network. You are choosing your friends! Please choose from the list provided at the top.
+You are friends with the users 7, 11, 8, 40, 32
+..."""
+        prompt += prompt_extra
     
     elif method in {'local', 'sequential'}:
         prompt = prompt_personal + ' You are joining a social network.\n\nYou will be provided a list of people in the network, ' + persona_format
@@ -82,6 +156,9 @@ def get_system_prompt(method, personas, demos_to_include, curr_pid=None, G=None,
         else:
             prompt += 'Answer by providing ONLY this friend\'s ID. '
         prompt += prompt_extra
+
+
+    print("system prompt", prompt)
     return prompt 
 
 
@@ -90,9 +167,13 @@ def get_user_prompt(method, personas, order, demos_to_include, curr_pid=None,
     """
     Get content for user message.
     """
-    assert method in {'global', 'local', 'sequential', 'iterative-add', 'iterative-drop'}        
+    assert method in {'global', 'global-expressive', 'local', 'sequential', 'iterative-add', 'iterative-drop'}        
     lines = []
     if method == 'global':
+        for pid in order:
+            lines.append(convert_persona_to_string(personas[pid], demos_to_include, pid=pid))
+
+    elif method == 'global-expressive':
         for pid in order:
             lines.append(convert_persona_to_string(personas[pid], demos_to_include, pid=pid))
     
@@ -140,6 +221,8 @@ def get_user_prompt(method, personas, order, demos_to_include, curr_pid=None,
         lines.append(f'Which person ID out of {id_list} are you likeliest to {action}?')
     
     prompt = '\n'.join(lines)
+
+    print("user prompt", prompt)
     return prompt 
     
 
@@ -148,11 +231,12 @@ def update_graph_from_response(method, response, G, curr_pid=None, include_reaso
     Parse response from LLM and update graph based on edges found.
     Expectation:
     - 'global' response should list all edges in the graph
+    - 'global-expressive' response should list all edges in the graph
     - 'local' and 'sequential' should list all new edges for curr_pid
     - 'iterative-add' should list one new edge to add for curr_pid
     - 'iterative-drop' should list one existing edge to drop for curr_pid
     """
-    assert method in {'global', 'local', 'sequential', 'iterative-add', 'iterative-drop'}
+    assert method in {'global', 'global-expressive', 'local', 'sequential', 'iterative-add', 'iterative-drop'}
     if num_choices is not None:
         assert method in {'local', 'sequential'}
     if include_reason:
@@ -165,6 +249,18 @@ def update_graph_from_response(method, response, G, curr_pid=None, include_reaso
         for line in lines:
             id1, id2 = line.split(',')
             edges_found.append((id1.strip(), id2.strip()))
+    
+    elif method == 'global-expressive':
+        id1 = "0"
+        for line in lines:
+            print("line", line)
+            if line[:5] == "User ":
+                id1 = line.replace("User ", "").strip()
+            if "You are friends with the users " in line:
+                id2s = line.replace("You are friends with the users ", "").strip().split(',')
+                for id2 in id2s:
+                    print("id1", id1.strip(), "id2", id2.strip())
+                    edges_found.append((id1.strip(), id2.strip()))
     
     elif method == 'local' or method == 'sequential':
         assert curr_pid is not None, f'{method} method needs curr_pid to parse response'
@@ -231,7 +327,7 @@ def generate_network(method, demos_to_include, personas, order, model, mean_choi
     """
     Generate entire network.
     """
-    assert method in {'global', 'local', 'sequential', 'iterative'}
+    assert method in {'global', 'global-expressive', 'local', 'sequential', 'iterative'}
     G = nx.Graph()
     G.add_nodes_from(order)
     reasons = {}
@@ -241,6 +337,16 @@ def generate_network(method, demos_to_include, personas, order, model, mean_choi
     
     if method == 'global':
         system_prompt = get_system_prompt(method, personas, demos_to_include, all_demos=all_demos)
+        user_prompt = get_user_prompt(method, personas, order, demos_to_include)
+        parse_args = {'method': method, 'G': G}
+        G, response, num_tries = repeat_prompt_until_parsed(model, system_prompt, user_prompt, update_graph_from_response,
+                                                            parse_args, temp=temp, verbose=verbose)
+        total_num_tries += num_tries
+        total_input_toks += len(system_prompt.split()) + len(user_prompt.split())
+        total_output_toks += len(response.split())
+    
+    elif method == 'global-expressive':
+        system_prompt = get_system_prompt(method, personas, demos_to_include, all_demos=all_demos, include_reason=include_reason)
         user_prompt = get_user_prompt(method, personas, order, demos_to_include)
         parse_args = {'method': method, 'G': G}
         G, response, num_tries = repeat_prompt_until_parsed(model, system_prompt, user_prompt, update_graph_from_response,
@@ -345,7 +451,7 @@ def parse_args():
     Parse command line arguments.
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('method', type=str, choices=['global', 'local', 'sequential', 'iterative'])
+    parser.add_argument('method', type=str, choices=['global', 'global-expressive', 'local', 'sequential', 'iterative'])
     parser.add_argument('--persona_fn', type=str, default='us_50_gpt4o_w_interests.json')
     parser.add_argument('--mean_choices', type=int, default=-1)
     parser.add_argument('--include_names', action='store_true')

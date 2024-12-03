@@ -1,0 +1,53 @@
+#generate_networks.py global-expressive --model gpt-3.5-turbo --num_networks 30 --include_interests --include_reason
+# GMT Sun Nov 24 11:44:32 2024
+# 
+28 0
+11 0
+10 0
+41
+2
+27 0
+38
+31
+22 0
+4
+33 0
+35 0
+26 0
+34
+18
+7
+14
+45
+48
+29
+15 0
+30
+32 0
+16
+42
+20
+43
+8
+13
+25
+5
+17 0
+40
+49
+1
+12
+37
+24
+6
+23
+36
+21
+19
+9
+39
+46 0
+3
+0 44 47
+47
+44
