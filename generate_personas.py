@@ -73,6 +73,8 @@ def generate_persona(seed, sorted_triplets, cdf):
         person['gender'] = 'Nonbinary'
     elif nonbinary < 0.001:
         person['gender'] = 'Nonbinary'
+
+    person['sociability'] = np.random.choice(['very introverted','introverted', 'neutral', 'extroverted', 'very extroverted'])
     
     # RELIGION - from Statista
     # https://www.statista.com/statistics/749128/religious-identity-of-adults-in-the-us-by-race-and-ethnicity/
@@ -200,14 +202,15 @@ def convert_persona_to_string(persona, demos_to_include, pid=None):
     else:
         s = f'{pid}. '
     if 'name' in demos_to_include:
-        name = ' '.join(persona['name'])
+        #name = ' '.join(persona['name'])
+        name = persona['name']
         s += f'{name} - '
     for pos, demo in enumerate(demos_to_include):
         if demo != 'name':
             if demo == 'age':
                 s += f'age {persona[demo]}, '  # specify age so GPT doesn't get number confused with ID
             elif demo == 'interests' and pos > 0:  # not first demo
-                s += f'interests include: {persona[demo]}, '
+                s += f'attributes: {persona[demo]}, '
             else:
                 s += f'{persona[demo]}, '
     s = s[:-2]  # remove trailing ', '
@@ -227,7 +230,7 @@ def assign_persona_to_model(persona, demos_to_include):
         if first_demo in ['gender', 'political affiliation']:  # noun
             article = 'an' if persona[first_demo].lower()[0] in ['a', 'e', 'i', 'o', 'u'] else 'a'
             s += article + ' ' + persona_str
-        elif first_demo in ['race/ethnicity', 'age', 'religion']:  # adjective
+        elif first_demo in ['race/ethnicity', 'age', 'religion','sociability']:  # adjective
             s += persona_str 
         else:
             assert first_demo == 'interests'
@@ -257,18 +260,37 @@ def parse_name_response(response):
     else:
         raise Exception('Response contains more than two words')
 
+def get_interest_examples(network_type):
+    messages = []
+    messages.append({"role": "user", "content": f"I am generating a network graph of [{network_type}], generate 100 examples of special interests or specific personality traits or anything else about a user that might influence how they connect in a network graph like this one, which could be relevant in the context of [{network_type}]. Provide no markdown or extra text or niceties, don't number the list, just put commas between them"})
 
-def generate_interests(personas, demos, model, verbose=False):
+    response = get_llm_response('gpt-4o', messages, savename=None, temp=DEFAULT_TEMPERATURE, verbose=False)
+
+    return response
+
+def generate_interests(personas, demos, model, network_type, verbose=False):
     """
     Generate interests, using GPT, for a list of personas.
     """
+
+    interest_examples = get_interest_examples(network_type)
+    print("interest_examples", interest_examples)
     for nr in personas:
-        prompt = f'In 8-12 words, describe the interests of someone with the following demographics:\n'
+        prompt = f'In 10-25 words, describe the varied interests/traits/facts about the following person might have that would be relevant to a social network graph of type [{network_type}]:\n'
         rand_order = np.random.choice(len(demos), replace=False, size=len(demos))  # shuffle order of demographics
         for idx in rand_order:
             demo = demos[idx]
             prompt += f'{demo}: {personas[nr][demo]}\n'
-        prompt += 'Answer by providing ONLY their interests. Do not include filler like "She enjoys" or "He has a keen interest in".'
+        prompt += 'Answer by providing ONLY the relevant interests/traits/facts. Don\'t repeat the demographic facts already given to you in the prompt. Do not include filler like "She enjoys" or "He has a keen interest in". Give all answers in comma separated format.'
+
+        prompt += """
+Here are some examples of possible things to work with:
+"""+interest_examples+"""
+
+If you choose to use any general idea, instead replace it with a specific example. For example, "workplace" might become "Works in retail". "Degree of stubbornness" might be replaced with "very stubborn" or "not stubborn". "celebrity fandom" might be replaced with "avid fan of Taylor Swift". "community issues" might become "African-American social issues". Etc. But don't use the specific examples I just gave.
+"""
+
+        print("prompt", prompt)
         interests, _, _ = repeat_prompt_until_parsed(model, None, prompt, parse_interest_response, {}, max_tries=3,
                                                      temp=NAMES_TEMPERATURE, verbose=verbose)
         personas[nr]['interests'] = interests
@@ -450,6 +472,8 @@ def parse():
     parser.add_argument('save_name', type=str, help='What is the name of the file where you would like to save the personas?')
     parser.add_argument('--include_names',  action='store_true', help='Would you like to add names to the personas?')
     parser.add_argument('--include_interests',  action='store_true', help='Would you like to add interests to the personas?')
+    parser.add_argument('--network_type', type=str, default='A real life group of people who live in a small town')
+    parser.add_argument('--network_name', type=str, default='')
     parser.add_argument('--model', type=str, default='gpt-3.5-turbo', help='Which model would you like to use for generating names/interests?')
 
     args = parser.parse_args()    
@@ -461,7 +485,7 @@ if __name__ == '__main__':
     # generate personas with GPT
     n = args.number_of_people
     save_name = args.save_name
-    demos_to_include = ['gender', 'race/ethnicity', 'age', 'religion', 'political affiliation']
+    demos_to_include = ['gender', 'race/ethnicity', 'age', 'religion', 'political affiliation', 'sociability']
     # demos_to_include = ['gender', 'race/ethnicity']  # TEMPORARY
 
     # get distributions from US Census data
@@ -480,7 +504,10 @@ if __name__ == '__main__':
     # generate interests
     if args.include_interests:
         save_name += '_w_interests'
-        personas = generate_interests(personas, demos_to_include, args.model)
+        personas = generate_interests(personas, demos_to_include, args.model, args.network_type)
+
+    if args.network_name and args.network_name != '':
+        save_name += '_' + args.network_name
 
     # save json
     fn = os.path.join(PATH_TO_TEXT_FILES, save_name + '.json')

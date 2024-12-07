@@ -29,6 +29,21 @@ with open('api-key.txt', 'r') as f:
 ##########################################
 # functions to draw and save networks
 ##########################################
+def draw_and_save_real_network_plot(G, save_prefix):
+    """
+    Draw network, save figure.
+    """
+    nx.draw_networkx(G, pos=nx.spring_layout(G, seed=0, k=2*1/np.sqrt(len(G.nodes()))))
+    plt.axis("off")  # turn off axis
+    axis = plt.gca()
+    axis.set_xlim([1.1*x for x in axis.get_xlim()])  # add padding so that node labels aren't cut off
+    axis.set_ylim([1.1*y for y in axis.get_ylim()])
+    plt.tight_layout()
+    fig_path = os.path.join(plotting.PATH_TO_SAVED_PLOTS + '/real', f'{save_prefix}.png')
+    print('Saving network drawing in ', fig_path)
+    plt.savefig(fig_path)
+    plt.close()
+
 def draw_and_save_network_plot(G, save_prefix):
     """
     Draw network, save figure.
@@ -144,7 +159,7 @@ def get_llm_response(model, messages, savename=None, temp=DEFAULT_TEMPERATURE, v
     """
     Call OpenAI API, check for finish reason; if all looks good, return response.
     """
-    if 'gpt' in model:
+    if 'gpt' in model or 'o1' in model:
         client = OpenAI(api_key=openai_key)
     else:
         client = OpenAI(api_key=llama_key, base_url = "https://api.llama-api.com")
@@ -189,7 +204,7 @@ def get_llm_response(model, messages, savename=None, temp=DEFAULT_TEMPERATURE, v
         
 
 def repeat_prompt_until_parsed(model, system_prompt, user_prompt, parse_method,
-                               parse_args, max_tries=10, temp=DEFAULT_TEMPERATURE, verbose=False):
+                               parse_args, max_tries=10, temp=DEFAULT_TEMPERATURE, verbose=False, dont_add_errors=False):
     """
     Helper function to repeat API call and parsing until it works.
     Works with any generic parse_method, where 'response' must be one of its args,
@@ -203,8 +218,10 @@ def repeat_prompt_until_parsed(model, system_prompt, user_prompt, parse_method,
     
     num_tries = 1
     while num_tries <= max_tries:
+        print("num_tries", num_tries)
         try:
             response = get_llm_response(model, messages, temp=temp, verbose=verbose)
+            print("response", response)
             try:
                 parse_args['response'] = response
                 parse_out = parse_method(**parse_args)
@@ -217,8 +234,9 @@ def repeat_prompt_until_parsed(model, system_prompt, user_prompt, parse_method,
                     print()
                 print('\nRESPONSE:')
                 print(response)
-                messages.append({"role": "assistant", "content": response})
-                messages.append({"role": "user", "content": f"Invalid response: {e}!"})
+                if not dont_add_errors:
+                    messages.append({"role": "assistant", "content": response})
+                    messages.append({"role": "user", "content": f"Invalid response: {e}!"})
         except Exception as e:
             print('Failed to get response:', e)
         num_tries += 1

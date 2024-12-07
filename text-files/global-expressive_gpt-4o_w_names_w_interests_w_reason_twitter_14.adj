@@ -1,0 +1,33 @@
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type A closely connected graph of twitter accounts --network_name twitter --connection_description follows on twitter
+# GMT Fri Dec  6 14:52:33 2024
+# 
+2 20 23 9 26 14 8
+18 15 20 23 8 19
+15 6 28 20
+3 5 12 9 28 25 19
+25 0 21 19 13 4 17 28
+1 16 7 14 22 29 6 26
+20 11
+27 11 9 28
+9 12 0 26
+5 26 24 12 21 16
+21 16 24 4 10
+28 11 0
+17 24 12 26
+14 19 0 23 6 16
+26 0 29
+19 7 16 6
+4 10 11
+0 6 22 13 29
+29 7 13
+13 12
+8 23
+16 7 6 22 10 24
+23
+10 6
+6 7 22
+7 22
+22
+12 24
+24
+11

@@ -21,16 +21,17 @@ def load_list_of_graphs(prefix, start_seed, end_seed, directed=True, include_ts=
     min_time, max_time = None, None
     for s in range(start_seed, end_seed):
         fn = os.path.join(PATH_TO_TEXT_FILES, f'{prefix}_{s}.adj')
-        mod = time.ctime(os.path.getmtime(fn))  # last modified time
-        if (min_time is None) or (mod < min_time):
-            min_time = mod 
-        elif (max_time is None) or (mod > max_time):
-            max_time = mod 
-        if directed:
-            G = nx.read_adjlist(fn, create_using=nx.DiGraph)
-        else:
-            G = nx.read_adjlist(fn)
-        list_of_G.append(G)
+        if os.path.exists(fn):
+            mod = time.ctime(os.path.getmtime(fn))  # last modified time
+            if (min_time is None) or (mod < min_time):
+                min_time = mod 
+            elif (max_time is None) or (mod > max_time):
+                max_time = mod 
+            if directed:
+                G = nx.read_adjlist(fn, create_using=nx.DiGraph)
+            else:
+                G = nx.read_adjlist(fn)
+            list_of_G.append(G)
     if include_ts:
         return list_of_G, min_time, max_time
     return list_of_G
@@ -150,31 +151,49 @@ def compute_same_proportions(G, personas, demo_keys, ratio=True):
     Compute proportion of edges that are same-group relations, per demographic variable.
     If ratio is true, divide by expected proportions.
     """
-    observed = _compute_same_proportions(G, personas, demo_keys)
+    observed = _compute_same_proportions(G, personas, demo_keys, True)
+    print("observed", observed)
     if not ratio:
         return observed 
     complete = nx.complete_graph(G.nodes())
+    print("complete", complete)
     expected = _compute_same_proportions(complete, personas, demo_keys)
+    print("expected", expected)
     return observed / expected
 
-def _compute_same_proportions(G, personas, demo_keys):
+def _compute_same_proportions(G, personas, demo_keys, should_print=False):
     """
     Helper function to compute the proportion of edges in the graph that are 
     same relations, per demographic variable.
     """ 
     # count same-relationships in graph
+
+    political_connections = {}
+
     same_counts = np.zeros(len(demo_keys))
     for source, target in G.edges():
         demo1 = personas[source]
         demo2 = personas[target]
+        if should_print:
+            print("source", source)
+            print("target", target)
+            print("demo1", demo1)
+            print("demo2", demo2)
         for ind, d in enumerate(demo_keys):
+            if d == 'political affiliation':
+                #print('political affiliation', int(demo1[d] == demo2[d]), demo1[d], demo2[d])
+                if demo1[d] +'-'+ demo2[d] not in political_connections:
+                    political_connections[demo1[d] +'-'+ demo2[d]] = 0
+                political_connections[demo1[d] +'-'+ demo2[d]] = political_connections[demo1[d] +'-'+ demo2[d]] + 1 / len(G.edges())
             if d == 'age':  # check whether age is within 10
                 same = int(abs(int(demo1[d]) - int(demo2[d])) <= 10)
             else:
                 same = int(demo1[d] == demo2[d])
             same_counts[ind] += same
     # get proportion of edges that are same relation
-    props = same_counts / len(G.edges())  
+    props = same_counts / len(G.edges())
+    print("political_connections", political_connections)
+    print("len(G.edges())", len(G.edges()))
     return props
 
 def summarize_network_metrics(list_of_G, personas, demo_keys, save_name, demos=True):
@@ -185,15 +204,21 @@ def summarize_network_metrics(list_of_G, personas, demo_keys, save_name, demos=T
     ### ---------------------------------- homophily ---------------------------------- ###
     if demos:
         homophily_metrics_df = pd.DataFrame({'graph_nr':[], 'demo':[], '_metric_value':[], 'save_name':[]})
+        print("homophily_metrics_df", homophily_metrics_df)
         for graph_nr, G in enumerate(list_of_G):
             same_homophily = list(compute_same_proportions(G, personas, demo_keys, ratio=True))
+            print("same_homophily", same_homophily)
             same_df = pd.DataFrame({'graph_nr':graph_nr, 'demo':demo_keys, 'metric_name': 'same_ratio',
                                     '_metric_value':same_homophily, 'save_name':[save_name]*len(demo_keys)})
+            print("same_df", same_df)
             cross_homophily = list(compute_cross_proportions(G, personas, demo_keys, ratio=True))
+            print("cross_homophily", cross_homophily)
             cross_df = pd.DataFrame({'graph_nr':graph_nr, 'demo':demo_keys, 'metric_name': 'cross_ratio',
                                     '_metric_value':cross_homophily, 'save_name':[save_name]*len(demo_keys)})
+            print("cross_df", cross_df)
             # concat with series
             homophily_metrics_df = pd.concat([homophily_metrics_df, same_df, cross_df])
+            print("homophily_metrics_df", homophily_metrics_df)
         # save homophily metrics dataframe in stats
         fn = f'{save_name}/homophily.csv'
         homophily_metrics_df.to_csv(os.path.join(PATH_TO_STATS_FILES, fn), index=False)
@@ -210,7 +235,7 @@ def summarize_network_metrics(list_of_G, personas, demo_keys, save_name, demos=T
             if metric_name in ['radius', 'diameter', 'avg_shortest_path']:
                 # use LCC for connectivity measures
                 largest_cc = sorted(nx.connected_components(G.to_undirected()), key=len, reverse=True)[0]
-                _metric_value = f(G.subgraph(largest_cc).to_undirected()) / np.log(len(largest_cc))
+                _metric_value = f(G.subgraph(largest_cc).to_undirected()) / max(1, np.log(len(largest_cc)))
             elif metric_name == 'modularity':
                 comms = nx.community.louvain_communities(G.to_undirected())  # get communities with Louvain
                 _metric_value = f(G.to_undirected(), comms)
@@ -272,21 +297,41 @@ def compute_isolation_index(G, personas):
     nodes = list(G.nodes())
     A = nx.adjacency_matrix(G, nodelist=nodes).todense()
     politics = np.array([personas[n]['political affiliation'] for n in nodes])
-    assert A.shape == (len(politics), len(politics))
-
+    
+    # Convert to numpy arrays to ensure proper operations
+    A = np.array(A)
+    
     # compute share conservative
     num_neighbors_c = A @ (politics == 'Republican').astype(int)
     num_neighbors_l = A @ (politics == 'Democrat').astype(int)
-    share_conservative = num_neighbors_c / (num_neighbors_c + num_neighbors_l)
-    
-    # compute conservative exposure
-    degree = np.sum(A, axis=0)
-    conservative_exposure = (A @ share_conservative) / degree
 
+    #print("Computing share_conservative...")
+    denominators = (num_neighbors_c + num_neighbors_l)
+    share_conservative = np.divide(num_neighbors_c, denominators, 
+                                 out=np.zeros_like(num_neighbors_c, dtype=float),
+                                 where=denominators!=0)
+    #print("share_conservative computed:", share_conservative[:5])  # Print first 5 values
+    
+    #print("Computing degree...")
+    degree = np.sum(A, axis=1)  # Changed from axis=0 to axis=1 for row sums
+    #print("degree computed:", degree[:5])  # Print first 5 values
+    
+    #print("Computing conservative_exposure...")
+    conservative_exposure = np.divide(A @ share_conservative, degree,
+                                   out=np.zeros_like(degree, dtype=float),
+                                   where=degree!=0)
+    #print("conservative_exposure computed:", conservative_exposure[:5])
+    
     # compute isolation
     avg_exposure_c = np.mean(conservative_exposure[politics == 'Republican'])
     avg_exposure_l = np.mean(conservative_exposure[politics == 'Democrat'])
-    isolation = avg_exposure_c-avg_exposure_l
+    isolation = avg_exposure_c - avg_exposure_l
+    
+    #print("Final metrics computed")
+    #print(f"avg_exposure_c: {avg_exposure_c}")
+    #print(f"avg_exposure_l: {avg_exposure_l}")
+    #print(f"isolation: {isolation}")
+    
     return isolation, avg_exposure_c, avg_exposure_l
 
 def compute_polarization(G, personas):
@@ -349,9 +394,10 @@ def parse():
     parser = argparse.ArgumentParser(description='Process command line arguments.')
     
     # Add arguments
-    parser.add_argument('--persona_fn', type=str, default='us_50_with_names_with_interests.json', help='What is the name of the persona file you want to use?')
+    parser.add_argument('--persona_fn', type=str, default='us_50_with_names_with_interests', help='What is the name of the persona file you want to use?')
     parser.add_argument('--network_fn', type=str, help='What is the name of the network file you want to use?')
     parser.add_argument('--num_networks', type=int, help='How many networks are there?')
+    parser.add_argument('--network_name', type=str, default='')
     parser.add_argument('--demos_to_include', nargs='+', default=['gender', 'race/ethnicity', 'age', 'religion', 'political affiliation'])
 
     # Parse the arguments
@@ -386,7 +432,7 @@ if __name__ == '__main__':
     args = parse()
     list_of_G = load_list_of_graphs(args.network_fn, 0, args.num_networks)
     get_edge_summary(list_of_G, args.network_fn)
-    fn = os.path.join(PATH_TO_TEXT_FILES, args.persona_fn)
+    fn = os.path.join(PATH_TO_TEXT_FILES, args.persona_fn) + '_' + args.network_name + '.json'
     # load from json
     with open(fn, 'r') as f:
         personas = json.load(f)

@@ -1,0 +1,53 @@
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 30 --include_interests --include_reason --num_processes 30 --temp 1.0
+# GMT Sun Nov 24 12:48:00 2024
+# 
+14 9 25 20 23 1 13 35 3 27
+18 12 3 21 6 0 19 39 25
+17 36 43 19 41 30 12 1 45 35 21
+32 46 10 22 37 44 34 8 28 33
+13
+33
+20
+8
+36
+28
+29
+10
+44
+3
+22
+48
+30
+35
+24
+23
+4
+42
+7
+1
+49
+41
+45
+15
+46
+16
+34
+37
+0
+5
+21
+11
+2
+43
+6
+25
+26
+39
+27
+12
+31
+47
+9
+40
+38
+19

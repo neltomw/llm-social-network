@@ -1,0 +1,33 @@
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type A group of twitter users --network_name disagree --connection_description has serious ideological disagreements with
+# GMT Fri Dec  6 15:32:03 2024
+# 
+2 13 15 29 17
+17 8 28 25 27 0
+1 7 4 18 21 29
+9 27 16 26 11 23
+11 16 22 18 28
+5 0 20 13 24
+18 21 14
+24 6 26 20
+27 16 13
+29 6 13 21
+12 19 3 13 28 7
+13 7
+16 3 10 19
+0 8
+28 25
+6 21 22
+26 19 15
+20 21
+10 19 8
+21 7 4
+8
+14 22 7
+7 4
+23 3 25
+19
+3
+22 15
+25
+4
+15

@@ -1,0 +1,33 @@
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type People in a tight social circle --network_name trust --connection_description deeply trusts
+# GMT Fri Dec  6 15:12:44 2024
+# 
+9 17 18 23 21
+4 5 3 15 26 11
+23 21 10 17
+7 28 24 19 0 2
+5 29 14 13 12 19
+3 15 26 11
+18 10 6 25
+19 22 0 20
+11 26 22 29 15
+6 27 25 16
+2 14 24 16
+15 20 26
+12 1 8 17
+16 27 25
+13 10 24 28
+29 22 17
+10 21 28
+14 17 1
+0 20 1 8
+26
+17 21
+8 1 24
+20 22
+25 27
+1
+27 28
+24
+22
+21
+28

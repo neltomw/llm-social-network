@@ -1,0 +1,33 @@
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type A network of people who work in the same small high tech company --network_name workplace --connection_description has worked on a project with
+# GMT Fri Dec  6 15:26:06 2024
+# 
+12 27 5 1 17
+20 11 24 6
+0 16 4 29 7 9
+6 2 17 26
+9 7 15 16 29
+13 28 25 14 26
+21 5 11 10
+3 5 22 10 27
+1 14 4 7
+28 25 5 23
+27 5 17 14
+7 29 4 16
+11 24
+23 4 25
+4 25
+16 8 29
+29 18 17
+15 24 22 8
+26 8
+25 18
+22 14
+8 14 19
+2 18 19
+18
+14
+17 5
+5
+24
+19 10
+10

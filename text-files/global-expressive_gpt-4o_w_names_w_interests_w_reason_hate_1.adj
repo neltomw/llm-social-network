@@ -1,0 +1,53 @@
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 10 --include_interests --include_reason --num_processes 10 --include_names --network_type People who have a mutual hatred for one another --network_name hate
+# GMT Fri Nov 29 05:30:30 2024
+# 
+27 14 35
+35 14
+40
+38 33 29 44 34
+2 49 48 44 22
+3
+48 44
+29 33
+46 32 45 31
+31 45 32 24
+32 24 45 26
+39 49 22
+21
+36 28 10 45 30
+19
+42 6 33 7 24
+49 22
+26 16 1 9
+22 44
+13
+41 12 11
+17
+45
+24
+23
+4 8 25
+33
+14
+30 10 28
+10 28
+28
+44
+34 43 37
+18 20
+20
+25 8
+6 7
+7 47 37
+47 5
+1 16
+16
+0
+15
+5
+11
+9
+8
+12
+43
+37

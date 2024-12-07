@@ -1,0 +1,33 @@
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type A network map of entities --network_name default --connection_description is connected to
+# GMT Fri Dec  6 15:08:16 2024
+# 
+11 24 29 22 21
+21 13 0
+28 15 10 18 25
+15 17 25
+20 6 2 18
+25 10
+17 27 5 13
+29 24 7
+19 16 8 0 23 3
+0 12 14 22
+3 7 23 24
+16 14 1 26 4
+10 18
+6 5 2 18
+12 1 7
+2 18
+4 26 9
+22 14 1
+13 27 23
+7
+9 23 8
+18
+24
+27 5
+8 26
+1
+5
+23
+14
+26
