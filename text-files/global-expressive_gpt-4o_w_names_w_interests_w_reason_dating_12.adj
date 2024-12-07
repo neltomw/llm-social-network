@@ -1,0 +1,33 @@
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type Members of a high school dating network in 1930 in Idaho --network_name dating --connection_description has dated
+# GMT Fri Dec  6 15:37:28 2024
+# 
+7 8 22 1 18
+22 20
+18 28 6
+14 29 4 24
+1 8
+21 10 2 11
+4 9 29 24
+15 20 0
+23 13 16
+9 24
+20 25
+8
+19 12 26
+0 6 25
+10 17 5
+28 6
+29 24
+25
+13 12
+5 2
+26
+16
+12 3 27
+24
+3
+2 17
+17
+6
+27
+11

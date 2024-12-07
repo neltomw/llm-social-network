@@ -1,53 +1,33 @@
-#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 10 --include_interests --include_reason --num_processes 10 --include_names --network_type A network of people who work in the same small high tech company, a connection means they have worked together on a project --network_name workplace --connection_description has worked on a project with
-# GMT Sat Nov 30 03:47:50 2024
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type A network of people who work in the same small high tech company --network_name workplace --connection_description has worked on a project with
+# GMT Fri Dec  6 15:26:39 2024
 # 
-27 2 29 35 32 40
-35 40 2
-40 2
-38 26 41 13 22 46 47 20 5
-2 42
-3 36 1 7 34 21 39
-48 0 32 49
+17 27 6 1 26 25 14
+21 5 4 13 24 14
+10 4 22 15 12 23
+19 2 1 7 16 8
+14 0 1 6 27
+20 26 24 22 3
+26 27 13
+3 16 7
+24 5 9
+22 15 8
+23 12 5 4 15
+4 15 12
+2 8 7 0 1
+25 29 27 6
+6 29 27
+18 28 9 0
+13 11 16 28
+7 1 8
+27
+1 8
+16 29
+0 29
+15 5 12
 29
-46 23 17 41 37 12 13
-31 44 34
-32 0 13 49
-39
-21 36
-36 22 20
-19 49 28 24
-42 18 14 6 22
-49 0 45
-26 37 12 20 10
-22 41 11 37 47
-13 10 20 7 15 43 16 34
-41 34 1 4 12
-17 33 5 15
-45 14 6 43
-24 7
-23 4 12
-4 9
-33 10 8 28 30
-14 6
-30 15 10 28
-10 28
-28 11 7
-44 43
-34 8 16 11
-18 9
-20 7 11
-25 9
-6 43
-7
-47 12
-1 43 8 16 15 37
-16 11
-0
-15
-5 12
-11
-9
-8 43 12
-12
-43
-37
+28 9
+9 11
+8
+12 11
+11 5
+5

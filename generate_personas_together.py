@@ -48,10 +48,40 @@ def get_gender_race_age_cdf():
     cdf[-1] = 1.
     return sorted_triplets, cdf 
 
-def generate_personas(n, network_type):
-    interest_examples = get_interest_examples(network_type)
+def generate_relevant_demographics(network_type, connection_description):
+    prompt = f'You are about to generate a network graph for a social network of type [{network_type}]. In addition to age, gender, race/ethnicity, religion, political affiliation, sociability and interests, which other personal attributes would be useful to include for each user in order to determine which other users they are connected to via a [{connection_description}] connection? And within each of those demographics and the ones I provided, what should the general distributions be? For example, what percentage of the users should be Male/Female/Nonbinary in order to realistically represent the network? Prioritize realism above everything else. Provide yourself with direction with regards to which attributes to include and which constraints to put on those attributes when generating users for this network. This direction will be included in a follow-up prompt, so dom\'t include any preamble, get directly into the instructions and make them useful for generating a realistic network of type [{network_type}]'
+    
+    prompt += """
+    You will be given these instructions in your next step, so take this into account
+'id' (int - starting at 0 and counting up),
+'age' (int),
+'gender' (Nonbinary/Male/Female),
+'race/ethnicity' (White/Black/American Indian/Alaska Native/Asian/Native Hawaiian/Pacific Islander/Hispanic),
+'religion' (Protestant/Catholic/Jewish/Muslim/Buddhist/Hindu/Unreligious),
+'political affiliation' (Republican/Democrat/Independent),
+'sociability' (very introverted/introverted/neutral/extroverted/very extroverted),
+'interests' (str - 20-50 words describing the individual and their interests/traits/history)
+'other' (str - 20-50 words accounting for any additional demographics that were requested, this is a dumping zone for extra demographics that weren't listed above, and anything else that would be relevant.),
+
+"""
+    print("prompt", prompt)
+
+    
+    messages = []
+    messages.append({"role": "user", "content": prompt})
+
+    results = get_llm_response('gpt-4o', messages, savename=None, temp=DEFAULT_TEMPERATURE, verbose=False)
+    print("results", results)
+
+    return results
+
+def generate_personas(n, network_type, connection_description):
+    interest_examples = get_interest_examples(network_type, connection_description)
     print("interest_examples", interest_examples)
-    prompt = f'Generate JSON objects for {n} unique personas for a social network graph of type [{network_type}]. THERE MUST BE EXACTLY {n} UNIQUE USERS GENERATED, NO MORE NO LESS. Do not make users that are exact copies of one another, they must all be unique, while still fitting into the social network that is being discussed. Choose the users so they are statistically representative a realistic network of this type. Each persona should have the following demographics:\n'
+    relevant_demographics = generate_relevant_demographics(network_type, connection_description)
+    print("relevant_demographics", relevant_demographics)
+    prompt = f'Generate JSON objects for {n} unique personas for a social network graph of type [{network_type}].\n'
+    prompt += f'THERE MUST BE EXACTLY {n} UNIQUE USERS GENERATED, NO MORE NO LESS. Do not make users that are exact copies of one another, they must all be unique, while still fitting into the social network that is being discussed. Choose the users so they are statistically representative a realistic network of this type. Each persona should have the following demographics:\n'
     prompt += """
 'id' (int - starting at 0 and counting up to """+str(n-1)+"""),
 'age' (int),
@@ -61,12 +91,21 @@ def generate_personas(n, network_type):
 'political affiliation' (Republican/Democrat/Independent),
 'sociability' (very introverted/introverted/neutral/extroverted/very extroverted),
 'name' (str - first and last),
-'description' (str - 10-25 to words describing the individual and their interests/traits/history that would be relevant to a social network graph of type ["""+network_type+"""]. Do not repeat descriptions between users, there can be overlap but they shouldn't be identical.)
+'other' (str - 20-50 words accounting for any additional demographics that were requested, this is a dumping zone for extra demographics that weren't listed above, and anything else that would be relevant.),
+'interests' (str - 20-50 words describing the individual and their interests/traits/history)
 
-Here are some possibie things to work with when creating a description:
+Here are some possibie things to work with when creating "other":
 """+interest_examples+"""
+"""
 
-Output one user per line, in JSON format. Do not include any markdown or extra text or niceties. Do not number the list. Do not include the demographic facts already given to you in the prompt. Do not include filler like "She enjoys" or "He has a keen interest in". Give all answers in comma separated format.:
+    prompt += f'Here are some directions you provided in an earlier step for helping to generate this group of users, please follow these: {relevant_demographics}\n'
+
+    prompt += """
+Do not repeat "other" between users, there can be overlap but they shouldn't be identical. Make a realistic set of users that would be found in a social network of this type.
+
+If the network is purely based on random numbers, ignore previous requirements for "interests" and "other", and ONLY generate interests of this format "'Random Number A: ' + str(random.randint(1, 12)) + ', Random Number B: ' + str(random.randint(1, 12)) + ', Random Number C: ' + str(random.randint(1, 12)). Make sure the numbers are random and not associated with specific demographics more than others."
+
+Output one user per line, in JSON format. Do not include any markdown or extra text or niceties. Do not number the list. Give all answers in comma separated format.:
     """
 
     print("prompt", prompt)
@@ -76,7 +115,7 @@ Output one user per line, in JSON format. Do not include any markdown or extra t
     for result_id in results:
         print("result_id", result_id)
         print("results[result_id] A", results[result_id])
-        results[result_id]['interests'] = results[result_id]['description']
+        results[result_id]['interests'] = results[result_id]['other'] + ', ' + results[result_id]['interests']
         print("results[result_id] B", results[result_id])
     #personas[nr]['interests'] = interests
     #print(convert_persona_to_string(personas[nr], demos + ['interests'], pid=nr))
@@ -91,10 +130,11 @@ def parse_personas_response(response):
 
     count = 0
     for a in ar:
-        json_persona = json.loads(a)
-        print("json_persona", json_persona)
-        personas[count] = json_persona
-        count += 1
+        if a != '' and '```' not in a:
+            json_persona = json.loads(a)
+            print("json_persona", json_persona)
+            personas[count] = json_persona
+            count += 1
 
     return personas
 
@@ -308,9 +348,12 @@ def parse_name_response(response):
     else:
         raise Exception('Response contains more than two words')
 
-def get_interest_examples(network_type):
+def get_interest_examples(network_type, connection_description):
     messages = []
-    messages.append({"role": "user", "content": f"I am generating a network graph of [{network_type}], generate 100 examples of special interests or specific personality traits or anything else about a user that might influence how they connect in a network graph like this one, which could be relevant in the context of [{network_type}]. Provide no markdown or extra text or niceties, don't number the list, just put commas between them"})
+    prompt = f"I am generating a network graph of [{network_type}], with connections of type [User X {connection_description} User Y]. Generate 10 - 100 examples of user attributes or interests or personality traits or anything else about a user that might influence how they connect in a network graph like this one (if anything might be relevant), which could be relevant in the context of [{connection_description}]. Generate data relevant for constructing a network graph. If the network is based on personal interests or attributes, provide examples of those. If the network is purely random, provide random numbers between 1 and 12 instead, separated by commas. Provide no markdown or extra text or niceties, don't number the list, just put commas between them"
+
+    print("prompt", prompt)
+    messages.append({"role": "user", "content": prompt})
 
     response = get_llm_response('gpt-4o', messages, savename=None, temp=DEFAULT_TEMPERATURE, verbose=False)
 
@@ -321,7 +364,7 @@ def generate_interests(personas, demos, model, network_type, verbose=False):
     Generate interests, using GPT, for a list of personas.
     """
 
-    interest_examples = get_interest_examples(network_type)
+    interest_examples = get_interest_examples(network_type, '')
     print("interest_examples", interest_examples)
     for nr in personas:
         prompt = f'In 10-25 words, describe the varied interests/traits/facts about the following person might have that would be relevant to a social network graph of type [{network_type}]:\n'
@@ -336,6 +379,8 @@ Here are some examples of possible things to work with:
 """+interest_examples+"""
 
 If you choose to use any general idea, instead replace it with a specific example. For example, "workplace" might become "Works in retail". "Degree of stubbornness" might be replaced with "very stubborn" or "not stubborn". "celebrity fandom" might be replaced with "avid fan of Taylor Swift". "community issues" might become "African-American social issues". Etc. But don't use the specific examples I just gave.
+
+If the network is purely random, provide random numbers between 1 and 12 instead.
 """
 
         print("prompt", prompt)
@@ -522,6 +567,7 @@ def parse():
     parser.add_argument('--include_interests',  action='store_true', help='Would you like to add interests to the personas?')
     parser.add_argument('--network_type', type=str, default='A real life group of people who live in a small town')
     parser.add_argument('--network_name', type=str, default='')
+    parser.add_argument('--connection_description', type=str, default='is connected to')    
     parser.add_argument('--model', type=str, default='gpt-3.5-turbo', help='Which model would you like to use for generating names/interests?')
 
     args = parser.parse_args()    
@@ -544,7 +590,7 @@ if __name__ == '__main__':
     #for i in range(n):
     #    personas[i] = generate_persona(i, sorted_triplets, cdf)
 
-    personas = generate_personas(n, args.network_type)
+    personas = generate_personas(n, args.network_type, args.connection_description)
     
     # generate names
     #if args.include_names:

@@ -1,0 +1,33 @@
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type A random group of random people with no relation to one another who are connected purely because they share any of 3 random numbers --network_name random --connection_description shares any of 3 random numbers
+# GMT Fri Dec  6 14:47:17 2024
+# 
+13 9 19 7 27 20 16 2 24 29 18 4
+3 25 5 21 16 1 23 17
+23 6 0 1 17 26 21 10 11
+6 22 14 18 28 11 19 15 0
+18 24 0 22 28 15
+25 17 7 16
+11 26 4 9 8
+24 19 16 9 20
+4 27 19 7 26
+17 1 8 21
+9 16 20
+16 20
+28 22 1
+0 15 22 14
+15 22 14 10 12 27
+7 20 27 2 19
+12 29 26 20 2
+22
+1 2 8 21 10
+5 14 26 29 19 10
+27
+26
+10 14
+20
+19 8
+8
+2 14
+21
+14
+29

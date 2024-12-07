@@ -62,21 +62,24 @@ def get_persona_format(demos_to_include):
         persona_format += 'Name - '
     for demo in demos_to_include:
         if demo != 'name':
-            persona_format += f'{demo.capitalize()}, '
+            #persona_format += f'{demo.capitalize()}, '
+            persona_format += f'{demo}'
     persona_format = persona_format[:-2]  # remove trailing ', '
     return persona_format
 
-def get_network_advice(network_type, num_users):
+def get_network_advice(network_type, connection_description, num_users):
     messages = []
-    messages.append({"role": "user", "content": f"I am generating a network graph of [{network_type}], with {num_users} total users. Each connection between a user represents a connection of type [{network_type}]. Keep that in mind when generating your advice. I need you to give advice to yourself about what kinds of rules to follow when creating connections between users. What range should the number of connections each user has be? What if they are very introverted, introverted, neutral, extroverted, very extroverted? Should connections be based on demographics, interests, or something else? Should connections-of-connections (friends of friends?) be used to help decide which users should be connected? Should fully-connected groups of users be created, and if so, what general criteria should be used? What are some general guidelines to follow when creating this network? Please return your very explicit advice, without any niceities or extra text, just the advice."})
+    messages.append({"role": "user", "content": f"I am generating a network graph of [{network_type}], with {num_users} total users. Each connection between a user represents a connection of type [{connection_description}]. In a later prompt, you will be given a list of users and then asked to loop through each user and provide a list of all the users that the current user is connected with. You will also be asked to provide any fully connected groups where the users are entirely connected to one another (if such groups should exist in this specific network). Please return your very explicit advice for yourself, with regards to how many connection each user should have (What makes sense with the connection type is [{connection_description} and the network type is {network_type}? Think seriously about this part.]), what are some criteria you could use for those connections, etc. Please provide the ouput without any niceities or extra text, just the advice."})
 
     response = get_llm_response('gpt-4o', messages, savename=None, temp=DEFAULT_TEMPERATURE, verbose=False)
 
     return response
 
-def get_relationship_examples(network_type):
+def get_relationship_examples(network_type, connection_description):
     messages = []
-    messages.append({"role": "user", "content": f"I am generating a network graph of [{network_type}], generate 100 examples of reasons why two people might be connected in a network graph like this one. Try to be realistic to this specific type of network. Provide no markdown or extra text or niceties, don't number the list, just put newlines between them"})
+    prompt = f"I am generating a network graph of [{network_type}], where connections are of type [User X {connection_description} User Y]. Generate between 10 and 100 examples of reasons why two people might be connected in a network graph like this one. Try to be realistic to this specific type of network. If the network happens to be based on random numbers, just provide some random examples of people sharing the same randomly generated number. Provide no markdown or extra text or niceties, don't number the list, just put newlines between them"
+    print("get_relationship_examples prompt", prompt)
+    messages.append({"role": "user", "content": prompt})
 
     response = get_llm_response('gpt-4o', messages, savename=None, temp=DEFAULT_TEMPERATURE, verbose=False)
 
@@ -112,15 +115,16 @@ def get_system_prompt(method, personas, demos_to_include, curr_pid=None, G=None,
         prompt = 'Your task is to create a realistic social network. You will be provided a list of people in the network, ' + persona_format + '. Provide a list of friendship pairs in the format ID, ID with each pair separated by a newline. ' + prompt_extra
 
     elif method == 'global-expressive':
-        relationship_examples = get_relationship_examples(network_type)
-        network_advice = get_network_advice(network_type, len(personas))
+        relationship_examples = get_relationship_examples(network_type, connection_description)
+        print("relationship_examples", relationship_examples)
+        network_advice = get_network_advice(network_type, connection_description, len(personas))
         print("network_advice", network_advice)
         
         if include_reason:
             #Each user should choose a wide array of connections, depending on their sociability [between 2 and 30] (very introverted people may only have 2 or 4, introverts might have 6, neutral people might have 10, extroverts might have 14, very extroverted people may have 20 connections or more).
 
             prompt = """
-Your task is to create a realistic social network. The network type is ["""+network_type+"""]. You will be provided a list of people in the network, """+persona_format+""". Don't rely fully on demographic information or interests to make connections, feel free to make things up. Please try to be realistic to this type of network. Here are 150 examples of potential types of relationships you could make up between the people in the network:
+Your task is to create a realistic social network. The network type is ["""+network_type+"""]. The connection type is ["""+connection_description+"""] You will be provided a list of people in the network, """+persona_format+""". Don't rely fully on demographic information or interests to make connections, feel free to make things up. Please try to be realistic to this type of network. Here are some examples of potential types of relationships you could make up between the people in the network:
 
 """+relationship_examples+"""
 
@@ -216,7 +220,7 @@ Make sure you do this FOR EVERY SINGLE USER, no matter how long your response ne
 
 
             prompt = """
-Your task is to create a realistic social network. The network type is ["""+network_type+"""]. You will be provided a list of people in the network, """+persona_format+""". Don't rely fully on demographic information or interests to make connections, feel free to make things up. Please try to be realistic to this type of network. Here are 150 examples of topics related to potential motives for connections, to keep in mind as you build this network:
+Your task is to create a realistic social network. The network type is ["""+network_type+"""]. The connection type is ["""+connection_description+"""] You will be provided a list of people in the network, """+persona_format+""". Please try to be realistic to this type of network. Here are 150 examples of topics related to potential motives for connections, to keep in mind as you build this network:
 
 """+relationship_examples+"""
 
@@ -243,16 +247,16 @@ USERS
 
 User USERID
 NAME is DEMOGRAPHICS_DATA_ABOUT_USER, and """+connection_description+""" X users.
-NAME """+connection_description+""" NAME1 (user USERID1) because REASON1
+* NAME """+connection_description+""" NAME1 (user USERID1) because REASON1
 ...
-NAME """+connection_description+""" NAMEX (user USERIDX) because REASONX
+* NAME """+connection_description+""" NAMEX (user USERIDX) because REASONX
 The user connections are USERID1, USERID2, ..., USERIDX
 
 The number of connections that each user has depends on that user's specific personality and description, take this into account when determining how many other users they will connect with according to ["""+network_type+"""].
 
 Then you will output a new line and move on to the next user, until you have completed this task for all the users in the list.
 
-Make sure you do this FOR EVERY SINGLE USER, no matter how long your response needs to be. Make sure each user is connected to at least one other user. Make sure to change the reasons, the number of connections, the number of groups, etc, based on the specific network type which is ["""+network_type+"""]. YOU NEED TO DO THIS FOR EVERY USER, IN ORDER, UNTIL YOU GET TO THE BOTTOM OF THE LIST.
+Make sure you do this FOR EVERY SINGLE USER, no matter how long your response needs to be. If you start to run out of tokens, you can stop adding reasons for each connection. But still have a reason in mind when you make the connection. If you are really desperately running out of tokens, you can stop adding the lines that start with "*". But make sure you still output all the other lines. Make sure each user is connected to at least one other user. Make sure to change the reasons, the number of connections, the number of groups, etc, based on the specific network type which is ["""+network_type+"""]. YOU NEED TO DO THIS FOR EVERY USER, IN ORDER, UNTIL YOU GET TO THE BOTTOM OF THE LIST.
 """
         else:
             prompt = """
@@ -443,9 +447,9 @@ def update_graph_from_response(method, response, G, curr_pid=None, include_reaso
                         edge_count = edge_count + 1
                         id_edge_count += 1
                 assert len(id2s) >= 1
-        assert user_count > 50 - 5
-        assert len(edges_found) > 50
-        assert edge_count > 50
+        assert user_count > 30 - 5
+        assert len(edges_found) > 30
+        assert edge_count > 30
     
     elif method == 'local' or method == 'sequential':
         assert curr_pid is not None, f'{method} method needs curr_pid to parse response'
@@ -534,8 +538,8 @@ def generate_network(method, demos_to_include, personas, order, model, mean_choi
         system_prompt = get_system_prompt(method, personas, demos_to_include, all_demos=all_demos, include_reason=include_reason, network_type=network_type, connection_description=connection_description)
         user_prompt = get_user_prompt(method, personas, order, demos_to_include)
         parse_args = {'method': method, 'G': G}
-        #print("system_prompt", system_prompt)
-        #print("user_prompt", user_prompt)
+        print("system_prompt", system_prompt)
+        print("user_prompt", user_prompt)
         G, response, num_tries = repeat_prompt_until_parsed(model, system_prompt, user_prompt, update_graph_from_response,
                                                             parse_args, temp=temp, verbose=verbose, dont_add_errors=True)
         total_num_tries += num_tries
@@ -676,7 +680,7 @@ def parse_args():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('method', type=str, choices=['global', 'global-expressive', 'local', 'sequential', 'iterative'])
-    parser.add_argument('--persona_fn', type=str, default='us_50_w_names_w_interests')
+    parser.add_argument('--persona_fn', type=str, default='us_30_w_names_w_interests')
     parser.add_argument('--mean_choices', type=int, default=-1)
     parser.add_argument('--include_names', action='store_true')
     parser.add_argument('--include_interests', action='store_true')
@@ -722,7 +726,7 @@ if __name__ == '__main__':
     pool = mp.Pool(processes=args.num_processes)
     seeds = range(args.start_seed, args.start_seed + args.num_networks)
 
-    get_relationship_examples(args.network_type)
+    get_relationship_examples(args.network_type, args.connection_description)
     
     # Create partial function with fixed arguments
     generate_network_partial = partial(

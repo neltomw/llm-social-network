@@ -1,53 +1,33 @@
-#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 10 --include_interests --include_reason --num_processes 10 --include_names --network_type A generic user relationship graph --network_name default
-# GMT Fri Nov 29 05:02:22 2024
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type A network map of entities --network_name default --connection_description is connected to
+# GMT Fri Dec  6 15:07:45 2024
 # 
-36 22 46 2 48 9 47 24 13 33 1 12 44 26 29 43 28
-47 5 33 6 9 1 24 13 29 10 26 28 43
-28 32 33 1 24 13 44 2 12 46 29 26 48 49 22 43
-9 5 10 29 6 24 26 1 13 43
-13 43 33 29 1 24 26 41
-0 39 45
-44 34 22 43 24 30 32 25 14 12 16 46 2 48
-46 10 43 40 22 48
-39 14 30 23
-23 14
-24 2 12 33 29 1 26
-48 4 33 31 43 6 42 37 25 38 22
-17 8 12
-12 26 2
-27 26
-33 16 29 26 1
-16 5
-2 32 49 37 34 38 20
-25 34 21
-14 32
-30 32 45 49 22
-5 26 1 43
-32 34 37 7 20 49
-1 26 43 29 19
-29 43 7 6 26 10
-35 26
-41 11
-19 43
-37 22 34 18
-10 43 6
-4 8 18
-6 15 43 22
-3 8
-20 22 49
-26 43
-38 34 45 43
-21 31 42 11
-42 43
-31
-34 7
+1 2 7 12 0 29
+0 14 19 8 16 26
+14 8 22 16 19
+9 4 23 24
+21 29 4 27 13 3
+19 8 16
+23 3
+6 10 20 29 27 4
+3 24 10
+20 2
+5 24 16 4 17
+27 29 4 10
+12 13 7 16
+4 29 26
+10 24 25 15 18 17 28 22
+16
+28 18
+25 18 13 15
+17 22 7 11
+2 7 24
 7
-49
-11
+26 8
+24 11
 18
-43
+11 22
 22
-8
-45 40
+29
+13
 15
-40
+8

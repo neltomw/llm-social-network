@@ -1,0 +1,33 @@
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type Social links between highschool boys who all know one another in a US school in the 1970s, boys ranked eachother from 0 (conflict likely) to 5 (close friends) --network_name moreno --connection_description has rated their relationship 2 or above out of 5
+# GMT Fri Dec  6 15:21:59 2024
+# 
+0 11 27 24 18 23 19 5 21 10 2 3
+18 1 28 20 16 23 19 11 22
+21 15 10 23 20 27 2 17
+11 26 15 28 7 22 1 24 19 16
+5 3 25 29 9 17 4 23 14
+23 15 2 17 4 29 10
+27 8 6 4 20 13
+19 15 28 24 16 13
+24 16 15 26 7 22 28 1
+26 22 1 16 15 28
+3 8 14 29 9
+2 10 14 12 6 4 20 15
+10 1 15 17 12
+8 4 20 22 13
+9 14 1 28 25
+28 1 16 7
+14 25 29 6 17
+1 20 7 16
+20 22 4
+12 22 15 4 17
+7 22 29 16
+4
+25 29 17
+13 15 6
+16 15
+22 6
+6
+29 17
+17
+15

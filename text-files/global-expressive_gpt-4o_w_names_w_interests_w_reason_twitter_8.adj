@@ -1,53 +1,33 @@
-#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 10 --include_interests --include_reason --num_processes 10 --include_names --network_type Twitter accounts and their followers, this network is a snapshot of the network in 2024, a connection is a follow --network_name twitter --connection_description follow
-# GMT Sat Nov 30 02:54:59 2024
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type A closely connected graph of twitter accounts --network_name twitter --connection_description follows on twitter
+# GMT Fri Dec  6 15:02:37 2024
 # 
-44 12 17
-49 25 32 23 9 46 12 1 47 2 22
-36 20 21 45 13 32
-23 32 30 5 7 35 3 45 19 16 14 43 18 26 0 17 22 8
-48 47 27 35 14 45 18 40 19 46 43 22 10 0 30 26 6 8 17 9
-22 46 32 2 17 47 9 25 12
-33 5 26 0 7 28
-0 25 19 35 43 3 30 18 10 32 9 5 40 47 16 2 27 14
-17 34 42 46 20 4
-45 32 4 13 21
-39 15
-38 16 10 18 37 28 14 8 43 42 12 30 26 35 24 2 21
-16 32 5 41 18
-12 43 32 25 35 47 3 18
-11 20 6 29
-1 2
-32 2 18 46 3 8 43 13 41 30 25 35 47
-46 31 37 42 30 35 24 34 20 47
-30 35 3 14 40 25 19 43 18 9 10
-31 24 15
-2 14 28 47 37
-28 5 21 37
-42 20 24 34
-7 26
-25 41 9 47
-47 9 37
-4 37 21
-43 14 27 18 40 19 35 9 5 10 29 3
-37 10 35 14 40
-24 34
-35 18 10 3 5 14 40 9 27
-6
-14 40 3 18
-18 3 40 19
-34 20
-29 5 41 40 19
-15
-9 3 27 41
-13 21 20
-27 3 10 40 19
-10 5 40 3 19
-21
-40 3
-19 3
-8 3 5
-26
-5
-41
+25 29 2 16 10 14 4 5 9 11 20 26 0 15 6 3 12 23 18 27 19 13 17 22 8 21 28 24
+0 29 10 14 5 22 19 27 26 6 1 13 3 12 16 24 17
+7 12 10 17 1 13 19 9 26 4 29 15
+18 8 21 27 11 28 20 17 2 23 26
+15 2 12 3 9 4 10 19 13
+4 29 9 10 17 19 13 3
+29 9 19 1 12 13 3 21 16
+1 26 3 16 22 10 14 24 19 6
+22 6 13 12 19 3 16 14 26
+6 14 3 16 9 26 10 19
+23 27 20 11 28 2 8 26 17
+11 8 26 10 2 20 27 17 28
+2 26 27 8 28 17 20
+14 16 9 26 19 3
+21 12 10 9 24 5 3 26
+26 16 3 19 20 27 13 12 17 9 8 24 5
+28 20 10 27 17 9
+12 16 17 9 24 10 5 3 19
+10 24 17 5 19 3 9 27 13
+27 17 20 8
+13 16 9 19 3
+16 5 19 3 9 24
+24 5 9 3
+19 3 9
+8 20 17
+5 3 9
+9 17 3
+17 3 20
 20
 3

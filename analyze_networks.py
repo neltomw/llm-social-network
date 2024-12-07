@@ -167,6 +167,9 @@ def _compute_same_proportions(G, personas, demo_keys, should_print=False):
     same relations, per demographic variable.
     """ 
     # count same-relationships in graph
+
+    political_connections = {}
+
     same_counts = np.zeros(len(demo_keys))
     for source, target in G.edges():
         demo1 = personas[source]
@@ -177,13 +180,20 @@ def _compute_same_proportions(G, personas, demo_keys, should_print=False):
             print("demo1", demo1)
             print("demo2", demo2)
         for ind, d in enumerate(demo_keys):
+            if d == 'political affiliation':
+                #print('political affiliation', int(demo1[d] == demo2[d]), demo1[d], demo2[d])
+                if demo1[d] +'-'+ demo2[d] not in political_connections:
+                    political_connections[demo1[d] +'-'+ demo2[d]] = 0
+                political_connections[demo1[d] +'-'+ demo2[d]] = political_connections[demo1[d] +'-'+ demo2[d]] + 1 / len(G.edges())
             if d == 'age':  # check whether age is within 10
                 same = int(abs(int(demo1[d]) - int(demo2[d])) <= 10)
             else:
                 same = int(demo1[d] == demo2[d])
             same_counts[ind] += same
     # get proportion of edges that are same relation
-    props = same_counts / len(G.edges())  
+    props = same_counts / len(G.edges())
+    print("political_connections", political_connections)
+    print("len(G.edges())", len(G.edges()))
     return props
 
 def summarize_network_metrics(list_of_G, personas, demo_keys, save_name, demos=True):

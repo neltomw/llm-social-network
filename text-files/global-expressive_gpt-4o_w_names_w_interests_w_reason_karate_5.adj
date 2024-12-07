@@ -1,53 +1,33 @@
-#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 10 --include_interests --include_reason --num_processes 10 --include_names --network_type This network describes friendships between members of a karate club at a US university. Due to a schism where the club split into two, this network has often been used to study community structure --network_name karate
-# GMT Fri Nov 29 14:51:36 2024
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type This network describes friendships between members of a karate club at a US university. Due to a schism where the club split into two, this network has often been used to study community structure --network_name karate --connection_description are allied with
+# GMT Fri Dec  6 15:16:04 2024
 # 
-42 28 29 24 21 43 13 6 4 9
-29 6 4 9 43 14
-6 13 27 17 18 36 24 47 19
-19 10 32
-28 7 48 8 46 22 34 37 18
-17 3 12 2
-2 11 49 39 38 0 21 48
-43 9 4 26
-3 24 47
-21
-31 13 4 12 14
-4 8 9 15
-32 20 44 24 48 25
-0 40 9 38 27 14 20 24 41 49
-23 13 27 14
-5 40 16 38
-48 22 34 30 20 37 12 44
-34 22 7 8 46 37 30
-37 41 44 30 22
-26 11 1 25
-41 27 7 22 35
-33 25 38 14
-24 27
-10 14 25
-44 46 30 22
-25 9 13
-18 16 36 45
-22 47
-20 49
-49 40 39 12
-1 13 9 16
-11 14
-13
-40 45 36
-46 30
-15 8 9
-12
-7 38 8
-45 47
-30
-27 35
-39 38
-36 47
-8 16
+11 6 28 26 4 24
+29 10 1 23
+23 17 9
+25 19 14 3 12
+18 13 12 10 20 24
+10 6 2
+2 5 13
+13 0 22 20
+26 8 28 20 24
+21 1 27
+28 24 16 0 15
+0 20 22
+17 4 9
+5 22 6
+1 16 27
+27 3
+12 6 20
+20 15
+19 14 3
+24 4 6
+7 3 16 15
+4 22 8
+8 6
 9
 16
-38 35
-47
-14
-35
+22
+6
+15 3
+14 3
+3

@@ -1,53 +1,33 @@
-#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 10 --include_interests --include_reason --num_processes 10 --include_names --network_type Interpersonal relationships built on deep trust, assume all users know eachother, but a connection means they deeply trust one another --network_name trust --connection_description deeply trusts
-# GMT Sat Nov 30 03:10:59 2024
+#generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type People in a tight social circle --network_name trust --connection_description deeply trusts
+# GMT Fri Dec  6 15:12:44 2024
 # 
-21 32 16 14 8 38 41 15
-37 2 39 14 45
-2 3
-14 1 7 12 39 45
-44 19 4 25 49 41 6 20 46
-7 26 23 42
-15 25 32 0 28
-20 22 10 13 31 6 18
-32 41 46 23
-25 36 47 0 49 6
-30 22 8 1 43 41 28 26 35 33 0
-45 16 39
-38 11 0 41 35 27 29
-26 43 0 35
-3 13 24 27
-31 23 41
-4 12 6 49 8 1 47 28 40
-41 10 0
-35 43 0
-36 19 18 16 33 6 17
-34 47 46 28 5 40
-43 11 0
-13 24
-8 49 12 16
-17 0 5 39 40
-39 18 47 0
-16 12 6 24 49 0
-9 19 6
-23 29
-6 1 42
-19 29
-5 40 0 10
-11 42 0 22
-47 46
-46
-18 49 48
-12 40 49 22 0
-42
-10 1 0
-24 0 48
-0 40 22
-49 28
-29 1
-33 27
-27
-40
-48 22
-1 22
+9 17 18 23 21
+4 5 3 15 26 11
+23 21 10 17
+7 28 24 19 0 2
+5 29 14 13 12 19
+3 15 26 11
+18 10 6 25
+19 22 0 20
+11 26 22 29 15
+6 27 25 16
+2 14 24 16
+15 20 26
+12 1 8 17
+16 27 25
+13 10 24 28
+29 22 17
+10 21 28
+14 17 1
+0 20 1 8
+26
+17 21
+8 1 24
+20 22
+25 27
+1
+27 28
+24
 22
+21
 28

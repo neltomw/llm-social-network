@@ -1,49 +1,78 @@
 {
     "karate": "This network describes friendships between members of a karate club at a US university. Due to a schism where the club split into two, this network has often been used to study community structure",
-    "moreno": "Social links between highschool boys in a US school in the 1970s, boys ranked eachother from -1 (conflict likely) to 3 (close friends), connections are any edge that is >0",
+    "moreno": "Social links between highschool boys who all know one another in a US school in the 1970s, boys ranked eachother from 0 (conflict likely) to 5 (close friends)",
     "twitter": "Twitter accounts and their followers, this network is a snapshot of the network in 2024, a connection is a follow",
     "trust": "Interpersonal relationships built on deep trust, assume all users know eachother, but a connection means they deeply trust one another",
-    "dating": "Members of a high school dating network in 1950, where a connection means the two people have dated",
+    "dating": "Members of a high school dating network in 1930, where a connection means the two people have dated",
     "smalltown": "Real life people who live in a small town and are at least acquaintances with one another",
     "disagree": "A network of people who disagree with one another, a connection means they have had a serious disagreement",
     "workplace": "A network of people who work in the same small high tech company, a connection means they have worked together on a project",
+    "random": "A random group of random people with no relation to one another"
 }
 
 
+python generate_personas_together.py 30 us_30 --model gpt-4o --include_interests --include_names --network_type "A random group of random people with no relation to one another who are connected by random chance based on a random number between 1 and 10" --network_name random --connection_description "has a arbitrary connection with through random number generation, based on no personal connection whatsoever, don't actually provide a reason, provide a random number between 1 and 10 instead"
 
-python generate_personas_together.py 50 us_50 --model gpt-4o --include_interests --include_names --network_type "A network of people who work in the same small high tech company, a connection means they have worked together on a project" --network_name workplace
+python generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type "A random group of random people with no relation to one another who are connected by random chance based on a random number between 1 and 10" --network_name random --connection_description "has a arbitrary connection with through random number generation, based on no personal connection whatsoever, don't actually provide a reason, provide a random number between 1 and 10 instead"
 
-python generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 10 --include_interests --include_reason --num_processes 10 --include_names --network_type "A network of people who work in the same small high tech company, a connection means they have worked together on a project" --network_name workplace
-
-python analyze_networks.py --persona_fn us_50_w_names_w_interests --network_fn global-expressive_gpt-4o_w_names_w_interests_w_reason_workplace --num_networks 10 --network_name workplace
-
-
-python generate_personas_together.py 50 us_50 --model gpt-4o --include_interests --include_names --network_type "A network of people who disagree with one another, a connection means they have had a serious disagreement" --network_name disagree
-
-python generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 10 --include_interests --include_reason --num_processes 10 --include_names --network_type "A network of people who disagree with one another, a connection means they have had a serious disagreement" --network_name disagree --connection_description "has long-standing disagreement with"
-
-python analyze_networks.py --persona_fn us_50_w_names_w_interests --network_fn global-expressive_gpt-4o_w_names_w_interests_w_reason_disagree --num_networks 10 --network_name disagree
+python analyze_networks.py --persona_fn us_30_w_names_w_interests --network_fn global-expressive_gpt-4o_w_names_w_interests_w_reason_random --num_networks 25 --network_name random
 
 
+python generate_personas_together.py 30 us_30 --model gpt-4o --include_interests --include_names --network_type "People in a tight social circle" --network_name trust --connection_description "deeply trusts"
 
-python generate_personas_together.py 50 us_50 --model gpt-4o --include_interests --include_names --network_type "Members of a high school dating network in 1950, where a connection means the two people have dated, dont add any Nonbinary users because that wasnt popular in the 1950s, add sexuality as a description on each user, and make almost every user heterosexual" --network_name dating;  
+python generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type "People in a tight social circle" --network_name trust --connection_description "deeply trusts"
 
-python generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 10 --include_interests --include_reason --num_processes 10 --include_names --network_type "Members of a high school dating network in 1950, where a connection means the two people have dated one another" --network_name dating --connection_description "has dated"
-
-python analyze_networks.py --persona_fn us_50_w_names_w_interests --network_fn global-expressive_gpt-4o_w_names_w_interests_w_reason_dating --num_networks 10 --network_name dating
+python analyze_networks.py --persona_fn us_30_w_names_w_interests --network_fn global-expressive_gpt-4o_w_names_w_interests_w_reason_trust --num_networks 25 --network_name trust
 
 
 
-python generate_personas_together.py 50 us_50 --model gpt-4o --include_interests --include_names --network_type "Twitter accounts and their followers, this network is a snapshot of the network in 2024, a connection is a follow" --network_name twitter
+python generate_personas_together.py 30 us_30 --model gpt-4o --include_interests --include_names --network_type "This network describes friendships between members of a karate club at a US university. Due to a schism where the club split into two, this network has often been used to study community structure" --network_name karate --connection_description "are allied with"
 
-python generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 10 --include_interests --include_reason --num_processes 10 --include_names --network_type "Twitter accounts and their followers, this network is a snapshot of the network in 2024, a connection is a follow" --network_name twitter
+python generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type "This network describes friendships between members of a karate club at a US university. Due to a schism where the club split into two, this network has often been used to study community structure" --network_name karate --connection_description "are allied with"
 
-python analyze_networks.py --persona_fn us_50_w_names_w_interests --network_fn global-expressive_gpt-4o_w_names_w_interests_w_reason_twitter --num_networks 10 --network_name twitter
+python analyze_networks.py --persona_fn us_30_w_names_w_interests --network_fn global-expressive_gpt-4o_w_names_w_interests_w_reason_karate --num_networks 25 --network_name karate
+
+
+python generate_personas_together.py 30 us_30 --model gpt-4o --include_interests --include_names --network_type "Social links between highschool boys who all know one another in a US school in the 1970s, boys ranked eachother from 0 (conflict likely) to 5 (close friends)" --network_name moreno --connection_description "has rated their relationship 2 or above out of 5"
+
+python generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type "Social links between highschool boys who all know one another in a US school in the 1970s, boys ranked eachother from 0 (conflict likely) to 5 (close friends)" --network_name moreno --connection_description "has rated their relationship 2 or above out of 5"
+
+python analyze_networks.py --persona_fn us_30_w_names_w_interests --network_fn global-expressive_gpt-4o_w_names_w_interests_w_reason_moreno --num_networks 25 --network_name moreno
+
+
+python generate_personas_together.py 30 us_30 --model gpt-4o --include_interests --include_names --network_type "A network of people who work in the same small high tech company" --network_name workplace --connection_description "has worked on a project with"
+
+python generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type "A network of people who work in the same small high tech company" --network_name workplace --connection_description "has worked on a project with"
+
+python analyze_networks.py --persona_fn us_30_w_names_w_interests --network_fn global-expressive_gpt-4o_w_names_w_interests_w_reason_workplace --num_networks 25 --network_name workplace
+
+
+python generate_personas_together.py 30 us_30 --model gpt-4o --include_interests --include_names --network_type "A group of twitter users" --network_name disagree --connection_description "has serious ideological disagreements with"
+
+python generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type "A group of twitter users" --network_name disagree --connection_description "has serious ideological disagreements with"
+
+python analyze_networks.py --persona_fn us_30_w_names_w_interests --network_fn global-expressive_gpt-4o_w_names_w_interests_w_reason_disagree --num_networks 25 --network_name disagree
 
 
 
-python generate_personas_together.py 50 us_50 --model gpt-4o --include_interests --include_names --network_type "Real life people who live in a small town and are at least acquaintances with one another" --network_name smalltown
+python generate_personas_together.py 30 us_30 --model gpt-4o --include_interests --include_names --network_type "Members of a high school dating network in 1930 in Idaho" --network_name dating --connection_description "has dated"
 
-python generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 10 --include_interests --include_reason --num_processes 10 --include_names --network_type "Real life people who live in a small town and are at least acquaintances with one another" --network_name smalltown
+python generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type "Members of a high school dating network in 1930 in Idaho" --network_name dating --connection_description "has dated"
 
-python analyze_networks.py --persona_fn us_50_w_names_w_interests --network_fn global-expressive_gpt-4o_w_names_w_interests_w_reason_smalltown --num_networks 10 --network_name smalltown
+python analyze_networks.py --persona_fn us_30_w_names_w_interests --network_fn global-expressive_gpt-4o_w_names_w_interests_w_reason_dating --num_networks 25 --network_name dating
+
+
+
+python generate_personas_together.py 30 us_30 --model gpt-4o --include_interests --include_names --network_type "A closely connected graph of twitter accounts" --network_name twitter --connection_description "has interacted with on twitter"
+
+python generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type "A closely connected graph of twitter accounts" --network_name twitter --connection_description "has interacted with on twitter"
+
+python analyze_networks.py --persona_fn us_30_w_names_w_interests --network_fn global-expressive_gpt-4o_w_names_w_interests_w_reason_twitter --num_networks 25 --network_name twitter
+
+
+
+python generate_personas_together.py 30 us_30 --model gpt-4o --include_interests --include_names --network_type "Real life people who live in a small village of 200 people" --network_name smalltown --connection_description "knows the name of"
+
+python generate_networks_in_parallel.py global-expressive --model gpt-4o --num_networks 25 --include_interests --include_reason --num_processes 25 --include_names --network_type "Real life people who live in a small town" --network_name smalltown --connection_description "knows the name of"
+
+python analyze_networks.py --persona_fn us_30_w_names_w_interests --network_fn global-expressive_gpt-4o_w_names_w_interests_w_reason_smalltown --num_networks 25 --network_name smalltown
